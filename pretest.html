@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)file:///Users/chi10/Downloads/%E5%89%8D%E6%B8%AC%E5%95%8F%E5%8D%B7.html -->
+<html lang="zh-Hant"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心進化｜新任主管陪跑計劃 前測問卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./心進化｜新任主管陪跑計劃 前測問卷_files/css2" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F1F4F1;
+    --panel: #FFFFFF;
+    --ink: #1E2A2E;
+    --ink-soft: #4B5A5D;
+    --line: #D9E0DA;
+    --brass: #B8813F;
+    --brass-dark: #96682E;
+    --teal: #2F6F62;
+    --teal-soft: #E3EEE9;
+    --danger: #B4543F;
+    --radius: 14px;
+    --step-total: 5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(184,129,63,0.08), transparent 45%),
+      radial-gradient(circle at 0% 100%, rgba(47,111,98,0.07), transparent 45%);
+    color: var(--ink);
+    font-family: "Noto Sans TC", sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* header */
+  .brandbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 22px; }
+  .brand{ font-family:"Noto Serif TC"; font-weight:700; font-size: 15px; color: var(--brass-dark); letter-spacing: 0.04em; }
+  .brand span{ color: var(--ink-soft); font-weight:400; }
+
+  /* forge rail (progress) */
+  .rail{ position:relative; height: 6px; background: var(--line); border-radius: 999px; margin: 6px 0 6px; overflow:hidden; }
+  .rail-fill{ position:absolute; inset:0; width: 0%; background: linear-gradient(90deg, var(--brass), var(--teal)); border-radius:999px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+  .rail-label{ display:flex; justify-content:space-between; font-size:12.5px; color: var(--ink-soft); margin-bottom: 28px; }
+
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: 0 1px 2px rgba(30,42,46,0.04), 0 8px 24px -14px rgba(30,42,46,0.15);
+  }
+
+  .eyebrow{ font-size: 12.5px; letter-spacing: 0.12em; color: var(--brass-dark); font-weight:700; text-transform:uppercase; margin-bottom: 10px; }
+  h1{ font-family:"Noto Serif TC"; font-weight:900; font-size: 26px; margin: 0 0 10px; letter-spacing: 0.01em; }
+  h2{ font-family:"Noto Serif TC"; font-weight:700; font-size: 20px; margin: 0 0 6px; }
+  .sub{ color: var(--ink-soft); font-size: 14.5px; margin-bottom: 6px; }
+  .note{ background: var(--teal-soft); border: 1px solid #cfe3da; color:#254e44; font-size: 13.5px; padding: 12px 14px; border-radius: 10px; margin: 16px 0 4px; }
+
+  .field{ margin: 20px 0; }
+  .field label{ display:block; font-weight:500; font-size: 14.5px; margin-bottom: 8px; }
+  .field input[type=text]{
+    width:100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line);
+    font-size: 15px; font-family: inherit; color: var(--ink); background: #FCFCFB;
+  }
+  .field input[type=text]:focus{ outline: 2px solid var(--teal); outline-offset: 1px; border-color: var(--teal); }
+
+  .qitem{ padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .qitem:last-child{ border-bottom: none; }
+  .qnum{ display:inline-block; font-family:"Noto Serif TC"; font-weight:700; color: var(--brass-dark); font-size: 13px; margin-bottom: 6px; }
+  .qtext{ font-size: 15.5px; margin-bottom: 14px; }
+
+  .likert{ display:flex; gap: 6px; flex-wrap: wrap; }
+  .likert label{ flex:1; min-width: 64px; }
+  .likert input{ position:absolute; opacity:0; width:0; height:0; }
+  .likert .opt{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 4px; cursor:pointer;
+    font-size: 12.5px; color: var(--ink-soft); text-align:center; transition: all .15s ease;
+    background:#FCFCFB;
+  }
+  .likert .num{ font-family:"Noto Serif TC"; font-weight:700; font-size:16px; color: var(--ink); }
+  .likert input:checked + .opt{ border-color: var(--teal); background: var(--teal-soft); color:#254e44; }
+  .likert input:checked + .opt .num{ color: var(--teal); }
+  .likert input:focus-visible + .opt{ outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .slider-row{ display:flex; align-items:center; gap: 16px; margin-top: 4px; }
+  .slider{
+    -webkit-appearance: none; appearance: none; flex:1; height: 6px; border-radius: 999px;
+    background: var(--line);
+    outline: none;
+  }
+  .slider::-webkit-slider-thumb{
+    -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(30,42,46,0.35); cursor: pointer;
+  }
+  .slider::-moz-range-thumb{
+    width: 26px; height: 26px; border-radius: 50%; background: var(--teal); border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(30,42,46,0.35); cursor: pointer;
+  }
+  .slider.untouched::-webkit-slider-thumb{ background: #fff; border: 3px dashed #B9C3BF; box-shadow:none; }
+  .slider.untouched::-moz-range-thumb{ background: #fff; border: 3px dashed #B9C3BF; box-shadow:none; }
+  .slider-value{
+    min-width: 44px; height: 34px; border-radius: 10px; background: var(--teal-soft); color: var(--teal);
+    display:flex; align-items:center; justify-content:center; font-family:"Noto Serif TC"; font-weight:700; font-size: 15px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .slider-value.unanswered{ background:#EEF0EE; color:#9AA5A0; font-weight:400; font-size:12.5px; }
+  .slider-anchors{ display:flex; justify-content:space-between; font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+  .slider-hint{ font-size: 12px; color: var(--brass-dark); margin-top: 6px; display:none; }
+  .qitem.unanswered .slider-hint{ display:block; }
+
+  .nav{ display:flex; justify-content:space-between; align-items:center; margin-top: 28px; gap: 12px; }
+  button{
+    font-family: inherit; font-size: 15px; font-weight: 700; border-radius: 10px; padding: 13px 26px;
+    border: none; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease;
+  }
+  .btn-primary{ background: var(--teal); color:#fff; }
+  .btn-primary:hover{ box-shadow: 0 6px 16px -6px rgba(47,111,98,0.5); }
+  .btn-primary:disabled{ background:#B9C3BF; cursor:not-allowed; box-shadow:none; }
+  .btn-ghost{ background:transparent; color: var(--ink-soft); border: 1.5px solid var(--line); }
+  .btn-ghost:hover{ border-color: var(--ink-soft); }
+
+  .err{ color: var(--danger); font-size: 13px; margin-top: 10px; display:none; }
+
+  .step{ display:none; }
+  .step.active{ display:block; animation: fadein .35s ease; }
+  @keyframes fadein{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  .done-icon{ width:56px; height:56px; border-radius:50%; background: var(--teal-soft); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .done-icon svg{ width:28px; height:28px; }
+
+  footer{ text-align:center; font-size:12px; color: var(--ink-soft); margin-top: 26px; opacity:.8; }
+
+  @media (max-width: 480px){
+    .card{ padding: 26px 18px; }
+    h1{ font-size: 22px; }
+    .likert{ gap:4px; }
+    .likert label{ min-width: 52px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brandbar">
+    <div class="brand">心進化 <span>SwitchMind</span></div>
+    <div class="brand" style="color:var(--ink-soft); font-weight:400;">春源鋼鐵・新任主管陪跑計劃</div>
+  </div>
+
+  <div class="rail"><div class="rail-fill" id="railFill" style="width: 0%;"></div></div>
+  <div class="rail-label"><span id="stepLabel">第 1 步／共 5 步</span><span id="stepName">基本資料</span></div>
+
+  <div class="card">
+
+    <!-- STEP 0: Intro / basic info -->
+    <section class="step active" data-step="0">
+      <div class="eyebrow">前測 · 開課前</div>
+      <h1>在課程開始之前，先為自己拍一張「現況照片」</h1>
+      <p class="sub">這份前測會在第一堂課後、第二堂課後再各做一次，用來看見你在這段陪跑歷程中的變化，不是用來評分或比較。請依照最近一個月的真實感受作答，沒有標準答案。</p>
+      <div class="note">填答時間約 6-8 分鐘。作答內容僅提供講師掌握團隊整體狀態，個人資料不會另作他用。</div>
+
+      <div class="field">
+        <label for="name">姓名</label>
+        <input type="text" id="name" placeholder="請輸入您的姓名">
+      </div>
+      <div class="field">
+        <label for="department">部門 / 單位</label>
+        <input type="text" id="department" placeholder="例如：品保部、製造二課">
+      </div>
+      <div class="field">
+        <label for="employeeId">工號（選填）</label>
+        <input type="text" id="employeeId" placeholder="若不清楚可留空">
+      </div>
+
+      <div class="nav">
+        <span></span>
+        <button class="btn-primary" onclick="goStep(1)">開始填寫</button>
+      </div>
+    </section>
+
+    <!-- STEP 1: PSS-10 -->
+    <section class="step" data-step="1">
+      <div class="eyebrow">量表一 · 壓力知覺</div>
+      <h2>最近一個月，這些狀態發生的頻率？</h2>
+      <p class="sub">請依直覺快速作答，不需要細想每題背後的意涵。</p>
+      <div id="pssContainer"><div class="qitem"><span class="qnum">Q1</span><div class="qtext">因為發生一些無法預期的事情而感到心煩意亂</div><div class="likert"><label><input type="radio" name="pss_0" value="0" onchange="setAnswer(&#39;pss&#39;,0,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_0" value="1" onchange="setAnswer(&#39;pss&#39;,0,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_0" value="2" onchange="setAnswer(&#39;pss&#39;,0,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_0" value="3" onchange="setAnswer(&#39;pss&#39;,0,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_0" value="4" onchange="setAnswer(&#39;pss&#39;,0,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q2</span><div class="qtext">感覺自己無法掌控生活中重要的事情</div><div class="likert"><label><input type="radio" name="pss_1" value="0" onchange="setAnswer(&#39;pss&#39;,1,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_1" value="1" onchange="setAnswer(&#39;pss&#39;,1,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_1" value="2" onchange="setAnswer(&#39;pss&#39;,1,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_1" value="3" onchange="setAnswer(&#39;pss&#39;,1,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_1" value="4" onchange="setAnswer(&#39;pss&#39;,1,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q3</span><div class="qtext">感到緊張與有壓力</div><div class="likert"><label><input type="radio" name="pss_2" value="0" onchange="setAnswer(&#39;pss&#39;,2,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_2" value="1" onchange="setAnswer(&#39;pss&#39;,2,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_2" value="2" onchange="setAnswer(&#39;pss&#39;,2,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_2" value="3" onchange="setAnswer(&#39;pss&#39;,2,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_2" value="4" onchange="setAnswer(&#39;pss&#39;,2,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q4</span><div class="qtext">有信心自己能夠妥善處理個人的問題</div><div class="likert"><label><input type="radio" name="pss_3" value="0" onchange="setAnswer(&#39;pss&#39;,3,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_3" value="1" onchange="setAnswer(&#39;pss&#39;,3,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_3" value="2" onchange="setAnswer(&#39;pss&#39;,3,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_3" value="3" onchange="setAnswer(&#39;pss&#39;,3,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_3" value="4" onchange="setAnswer(&#39;pss&#39;,3,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q5</span><div class="qtext">感覺事情都照著自己預期的方向在發展</div><div class="likert"><label><input type="radio" name="pss_4" value="0" onchange="setAnswer(&#39;pss&#39;,4,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_4" value="1" onchange="setAnswer(&#39;pss&#39;,4,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_4" value="2" onchange="setAnswer(&#39;pss&#39;,4,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_4" value="3" onchange="setAnswer(&#39;pss&#39;,4,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_4" value="4" onchange="setAnswer(&#39;pss&#39;,4,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q6</span><div class="qtext">感覺自己無法應付所有必須完成的事情</div><div class="likert"><label><input type="radio" name="pss_5" value="0" onchange="setAnswer(&#39;pss&#39;,5,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_5" value="1" onchange="setAnswer(&#39;pss&#39;,5,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_5" value="2" onchange="setAnswer(&#39;pss&#39;,5,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_5" value="3" onchange="setAnswer(&#39;pss&#39;,5,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_5" value="4" onchange="setAnswer(&#39;pss&#39;,5,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q7</span><div class="qtext">能夠控制生活中令人心煩的事情</div><div class="likert"><label><input type="radio" name="pss_6" value="0" onchange="setAnswer(&#39;pss&#39;,6,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_6" value="1" onchange="setAnswer(&#39;pss&#39;,6,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_6" value="2" onchange="setAnswer(&#39;pss&#39;,6,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_6" value="3" onchange="setAnswer(&#39;pss&#39;,6,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_6" value="4" onchange="setAnswer(&#39;pss&#39;,6,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q8</span><div class="qtext">感覺自己掌握全局、遊刃有餘</div><div class="likert"><label><input type="radio" name="pss_7" value="0" onchange="setAnswer(&#39;pss&#39;,7,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_7" value="1" onchange="setAnswer(&#39;pss&#39;,7,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_7" value="2" onchange="setAnswer(&#39;pss&#39;,7,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_7" value="3" onchange="setAnswer(&#39;pss&#39;,7,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_7" value="4" onchange="setAnswer(&#39;pss&#39;,7,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q9</span><div class="qtext">因為超出自己控制範圍的事情而感到生氣</div><div class="likert"><label><input type="radio" name="pss_8" value="0" onchange="setAnswer(&#39;pss&#39;,8,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_8" value="1" onchange="setAnswer(&#39;pss&#39;,8,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_8" value="2" onchange="setAnswer(&#39;pss&#39;,8,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_8" value="3" onchange="setAnswer(&#39;pss&#39;,8,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_8" value="4" onchange="setAnswer(&#39;pss&#39;,8,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div><div class="qitem"><span class="qnum">Q10</span><div class="qtext">感覺困難堆積如山，多到自己無法克服</div><div class="likert"><label><input type="radio" name="pss_9" value="0" onchange="setAnswer(&#39;pss&#39;,9,0)">
+        <span class="opt"><span class="num">0</span>從不</span></label><label><input type="radio" name="pss_9" value="1" onchange="setAnswer(&#39;pss&#39;,9,1)">
+        <span class="opt"><span class="num">1</span>偶爾</span></label><label><input type="radio" name="pss_9" value="2" onchange="setAnswer(&#39;pss&#39;,9,2)">
+        <span class="opt"><span class="num">2</span>有時</span></label><label><input type="radio" name="pss_9" value="3" onchange="setAnswer(&#39;pss&#39;,9,3)">
+        <span class="opt"><span class="num">3</span>時常</span></label><label><input type="radio" name="pss_9" value="4" onchange="setAnswer(&#39;pss&#39;,9,4)">
+        <span class="opt"><span class="num">4</span>總是</span></label></div></div></div>
+      <div class="err" id="err1">請完成所有題目後再繼續。</div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="goStep(0)">上一步</button>
+        <button class="btn-primary" onclick="tryNext(1,2)">下一步</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: GSE -->
+    <section class="step" data-step="2">
+      <div class="eyebrow">量表二 · 自我效能</div>
+      <h2>面對挑戰時，你對自己的看法是？</h2>
+      <p class="sub">請依照「符合自己實際狀況」的程度作答。</p>
+      <div id="gseContainer"><div class="qitem"><span class="qnum">Q1</span><div class="qtext">如果我盡力去做，我總是能夠解決困難的問題</div><div class="likert"><label><input type="radio" name="gse_0" value="0" onchange="setAnswer(&#39;gse&#39;,0,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_0" value="1" onchange="setAnswer(&#39;gse&#39;,0,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_0" value="2" onchange="setAnswer(&#39;gse&#39;,0,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_0" value="3" onchange="setAnswer(&#39;gse&#39;,0,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q2</span><div class="qtext">即使有人反對，我還是能找到辦法達成我想要的目標</div><div class="likert"><label><input type="radio" name="gse_1" value="0" onchange="setAnswer(&#39;gse&#39;,1,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_1" value="1" onchange="setAnswer(&#39;gse&#39;,1,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_1" value="2" onchange="setAnswer(&#39;gse&#39;,1,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_1" value="3" onchange="setAnswer(&#39;gse&#39;,1,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q3</span><div class="qtext">對我來說，堅持自己的理想並達成目標並不困難</div><div class="likert"><label><input type="radio" name="gse_2" value="0" onchange="setAnswer(&#39;gse&#39;,2,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_2" value="1" onchange="setAnswer(&#39;gse&#39;,2,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_2" value="2" onchange="setAnswer(&#39;gse&#39;,2,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_2" value="3" onchange="setAnswer(&#39;gse&#39;,2,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q4</span><div class="qtext">我有信心能有效應對任何意外發生的狀況</div><div class="likert"><label><input type="radio" name="gse_3" value="0" onchange="setAnswer(&#39;gse&#39;,3,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_3" value="1" onchange="setAnswer(&#39;gse&#39;,3,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_3" value="2" onchange="setAnswer(&#39;gse&#39;,3,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_3" value="3" onchange="setAnswer(&#39;gse&#39;,3,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q5</span><div class="qtext">憑藉我的應變能力，我知道如何處理不可預期的狀況</div><div class="likert"><label><input type="radio" name="gse_4" value="0" onchange="setAnswer(&#39;gse&#39;,4,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_4" value="1" onchange="setAnswer(&#39;gse&#39;,4,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_4" value="2" onchange="setAnswer(&#39;gse&#39;,4,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_4" value="3" onchange="setAnswer(&#39;gse&#39;,4,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q6</span><div class="qtext">只要我願意付出必要的努力，就能解決大多數的問題</div><div class="likert"><label><input type="radio" name="gse_5" value="0" onchange="setAnswer(&#39;gse&#39;,5,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_5" value="1" onchange="setAnswer(&#39;gse&#39;,5,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_5" value="2" onchange="setAnswer(&#39;gse&#39;,5,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_5" value="3" onchange="setAnswer(&#39;gse&#39;,5,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q7</span><div class="qtext">我能冷靜面對困難，因為我可以信賴自己處理問題的能力</div><div class="likert"><label><input type="radio" name="gse_6" value="0" onchange="setAnswer(&#39;gse&#39;,6,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_6" value="1" onchange="setAnswer(&#39;gse&#39;,6,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_6" value="2" onchange="setAnswer(&#39;gse&#39;,6,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_6" value="3" onchange="setAnswer(&#39;gse&#39;,6,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q8</span><div class="qtext">當我遇到問題時，我通常能想到好幾個解決方法</div><div class="likert"><label><input type="radio" name="gse_7" value="0" onchange="setAnswer(&#39;gse&#39;,7,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_7" value="1" onchange="setAnswer(&#39;gse&#39;,7,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_7" value="2" onchange="setAnswer(&#39;gse&#39;,7,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_7" value="3" onchange="setAnswer(&#39;gse&#39;,7,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q9</span><div class="qtext">遇到困境時，我通常能想出應對的辦法</div><div class="likert"><label><input type="radio" name="gse_8" value="0" onchange="setAnswer(&#39;gse&#39;,8,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_8" value="1" onchange="setAnswer(&#39;gse&#39;,8,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_8" value="2" onchange="setAnswer(&#39;gse&#39;,8,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_8" value="3" onchange="setAnswer(&#39;gse&#39;,8,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div><div class="qitem"><span class="qnum">Q10</span><div class="qtext">無論發生什麼事，我通常都能妥善處理</div><div class="likert"><label><input type="radio" name="gse_9" value="0" onchange="setAnswer(&#39;gse&#39;,9,0)">
+        <span class="opt"><span class="num">0</span>完全不正確</span></label><label><input type="radio" name="gse_9" value="1" onchange="setAnswer(&#39;gse&#39;,9,1)">
+        <span class="opt"><span class="num">1</span>有些正確</span></label><label><input type="radio" name="gse_9" value="2" onchange="setAnswer(&#39;gse&#39;,9,2)">
+        <span class="opt"><span class="num">2</span>大多正確</span></label><label><input type="radio" name="gse_9" value="3" onchange="setAnswer(&#39;gse&#39;,9,3)">
+        <span class="opt"><span class="num">3</span>完全正確</span></label></div></div></div>
+      <div class="err" id="err2">請完成所有題目後再繼續。</div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="goStep(1)">上一步</button>
+        <button class="btn-primary" onclick="tryNext(2,3)">下一步</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: PERMA -->
+    <section class="step" data-step="3">
+      <div class="eyebrow">量表三 · 幸福感 (PERMA)</div>
+      <h2>整體來說，最近的你是這樣嗎？</h2>
+      <p class="sub">每題請拖曳滑桿選出最符合你最近狀態的分數，兩端的文字說明會依題目而不同。</p>
+      <div id="permaContainer">
+      <div class="qitem unanswered" id="perma_item_0">
+        <span class="qnum">Q1</span>
+        <div class="qtext">一般而言，你目前有多大的程度認為自己正在過著有目的且具意義的生活？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_0" oninput="onSliderInput(0)">
+          <div class="slider-value unanswered" id="perma_val_0">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_1">
+        <span class="qnum">Q2</span>
+        <div class="qtext">有多少的時間你認為自己正在往要完成的目標前進？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_1" oninput="onSliderInput(1)">
+          <div class="slider-value unanswered" id="perma_val_1">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從來沒有</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_2">
+        <span class="qnum">Q3</span>
+        <div class="qtext">你有多常能夠全心投入你正在進行的事件中？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_2" oninput="onSliderInput(2)">
+          <div class="slider-value unanswered" id="perma_val_2">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從來沒有</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_3">
+        <span class="qnum">Q4</span>
+        <div class="qtext">一般而言，你會認為自己的健康狀態如何？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_3" oninput="onSliderInput(3)">
+          <div class="slider-value unanswered" id="perma_val_3">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 非常糟糕</span><span>10 = 非常好</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_4">
+        <span class="qnum">Q5</span>
+        <div class="qtext">一般而言，你有多常感到愉悅？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_4" oninput="onSliderInput(4)">
+          <div class="slider-value unanswered" id="perma_val_4">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從來沒有</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_5">
+        <span class="qnum">Q6</span>
+        <div class="qtext">當你需要時，你從他人獲得幫助和支持的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_5" oninput="onSliderInput(5)">
+          <div class="slider-value unanswered" id="perma_val_5">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_6">
+        <span class="qnum">Q7</span>
+        <div class="qtext">一般而言，你有多常感到焦慮？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_6" oninput="onSliderInput(6)">
+          <div class="slider-value unanswered" id="perma_val_6">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從來沒有</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_7">
+        <span class="qnum">Q8</span>
+        <div class="qtext">你有多常完成你為自己所設定的重要目標？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_7" oninput="onSliderInput(7)">
+          <div class="slider-value unanswered" id="perma_val_7">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從來沒有</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_8">
+        <span class="qnum">Q9</span>
+        <div class="qtext">一般而言，你感到在生活中所做的是有價值且值得的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_8" oninput="onSliderInput(8)">
+          <div class="slider-value unanswered" id="perma_val_8">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_9">
+        <span class="qnum">Q10</span>
+        <div class="qtext">一般而言，你有多常感到正向？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_9" oninput="onSliderInput(9)">
+          <div class="slider-value unanswered" id="perma_val_9">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從未如此</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_10">
+        <span class="qnum">Q11</span>
+        <div class="qtext">一般而言，在事物上你感到興奮和有趣的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_10" oninput="onSliderInput(10)">
+          <div class="slider-value unanswered" id="perma_val_10">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_11">
+        <span class="qnum">Q12</span>
+        <div class="qtext">在你的日常生活中，你感到多孤單？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_11" oninput="onSliderInput(11)">
+          <div class="slider-value unanswered" id="perma_val_11">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_12">
+        <span class="qnum">Q13</span>
+        <div class="qtext">你對於目前的身體健康有多滿意？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_12" oninput="onSliderInput(12)">
+          <div class="slider-value unanswered" id="perma_val_12">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 相當滿意</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_13">
+        <span class="qnum">Q14</span>
+        <div class="qtext">一般而言，你有多常感到憤怒？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_13" oninput="onSliderInput(13)">
+          <div class="slider-value unanswered" id="perma_val_13">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從未如此</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_14">
+        <span class="qnum">Q15</span>
+        <div class="qtext">你感到被愛的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_14" oninput="onSliderInput(14)">
+          <div class="slider-value unanswered" id="perma_val_14">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_15">
+        <span class="qnum">Q16</span>
+        <div class="qtext">你有多常能夠掌握並處理好自己的責任？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_15" oninput="onSliderInput(15)">
+          <div class="slider-value unanswered" id="perma_val_15">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從未如此</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_16">
+        <span class="qnum">Q17</span>
+        <div class="qtext">你通常覺得自己生活有方向感的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_16" oninput="onSliderInput(16)">
+          <div class="slider-value unanswered" id="perma_val_16">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_17">
+        <span class="qnum">Q18</span>
+        <div class="qtext">相對於其他同年齡與性別者，你的健康如何？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_17" oninput="onSliderInput(17)">
+          <div class="slider-value unanswered" id="perma_val_17">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 非常糟糕</span><span>10 = 非常好</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_18">
+        <span class="qnum">Q19</span>
+        <div class="qtext">你對自己的人際關係感到滿意的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_18" oninput="onSliderInput(18)">
+          <div class="slider-value unanswered" id="perma_val_18">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_19">
+        <span class="qnum">Q20</span>
+        <div class="qtext">一般而言，你有多常感到悲傷？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_19" oninput="onSliderInput(19)">
+          <div class="slider-value unanswered" id="perma_val_19">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從未如此</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_20">
+        <span class="qnum">Q21</span>
+        <div class="qtext">你有多常投入在做你感到愉悅的事時忘掉時間？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_20" oninput="onSliderInput(20)">
+          <div class="slider-value unanswered" id="perma_val_20">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 從未如此</span><span>10 = 總是如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_21">
+        <span class="qnum">Q22</span>
+        <div class="qtext">一般而言，你感到滿足的程度是？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_21" oninput="onSliderInput(21)">
+          <div class="slider-value unanswered" id="perma_val_21">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>
+      <div class="qitem unanswered" id="perma_item_22">
+        <span class="qnum">Q23</span>
+        <div class="qtext">整體而言，你認為你自己有多快樂？</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched" id="perma_22" oninput="onSliderInput(22)">
+          <div class="slider-value unanswered" id="perma_val_22">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = 一點也不</span><span>10 = 完全如此</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div></div>
+      <div class="err" id="err3">請完成所有題目後再繼續。</div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="goStep(2)">上一步</button>
+        <button class="btn-primary" onclick="tryNext(3,4)">下一步</button>
+      </div>
+    </section>
+
+    <!-- STEP 4: Review & submit -->
+    <section class="step" data-step="4">
+      <div class="eyebrow">最後一步</div>
+      <h2>確認送出</h2>
+      <p class="sub">送出後即完成前測。這份記錄會在課程結束後，成為你回顧自己變化的重要參考。</p>
+      <div class="note" id="reviewSummary"></div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="goStep(3)">上一步</button>
+        <button class="btn-primary" id="submitBtn" onclick="submitForm()">送出前測</button>
+      </div>
+    </section>
+
+    <!-- STEP 5: Done -->
+    <section class="step" data-step="5">
+      <div class="done-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" stroke="#2F6F62" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </div>
+      <h1>前測已完成，謝謝你的誠實作答</h1>
+      <p class="sub">這只是這段陪跑歷程的起點。我們在第一堂課見。</p>
+    </section>
+
+  </div>
+
+  <footer>心進化有限公司（SwitchMind）｜本測驗結果僅作為訓練成效追蹤參考，非臨床診斷工具<br>PERMA量表中文化參考：陳春宇、卓淑玲（2022）。大學生「PERMA積極富能量表—中文版」之心理計量特性研究。測驗學刊，69(1), 1-28.</footer>
+</div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+// 部署 Apps Script 後，把網頁應用程式網址貼在這裡
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqNBvmHrycywaDxudcycq1d4AS-2T7FOdRu2-FwJH7BvNUGPnsrO5jii3ThLdsmRgGBw/exec";
+
+/* ---------------- SCALE DEFINITIONS ---------------- */
+const pssItems = [
+  "因為發生一些無法預期的事情而感到心煩意亂",
+  "感覺自己無法掌控生活中重要的事情",
+  "感到緊張與有壓力",
+  "有信心自己能夠妥善處理個人的問題",
+  "感覺事情都照著自己預期的方向在發展",
+  "感覺自己無法應付所有必須完成的事情",
+  "能夠控制生活中令人心煩的事情",
+  "感覺自己掌握全局、遊刃有餘",
+  "因為超出自己控制範圍的事情而感到生氣",
+  "感覺困難堆積如山，多到自己無法克服"
+];
+const pssReverse = [4,5,7,8]; // 1-indexed items that are positively worded (reverse-scored)
+const pssOptions = ["從不","偶爾","有時","時常","總是"]; // 0-4
+
+const gseItems = [
+  "如果我盡力去做，我總是能夠解決困難的問題",
+  "即使有人反對，我還是能找到辦法達成我想要的目標",
+  "對我來說，堅持自己的理想並達成目標並不困難",
+  "我有信心能有效應對任何意外發生的狀況",
+  "憑藉我的應變能力，我知道如何處理不可預期的狀況",
+  "只要我願意付出必要的努力，就能解決大多數的問題",
+  "我能冷靜面對困難，因為我可以信賴自己處理問題的能力",
+  "當我遇到問題時，我通常能想到好幾個解決方法",
+  "遇到困境時，我通常能想出應對的辦法",
+  "無論發生什麼事，我通常都能妥善處理"
+];
+const gseOptions = ["完全不正確","有些正確","大多正確","完全正確"]; // 1-4
+
+// PERMA-Profiler（Butler & Kern, 2016；中文版信效度：陳春宇、卓淑玲，2022）
+// officialNo = 原始量表題號，用來對應官方的計分分組與定錨語
+const permaItems = [
+  { text:"一般而言，你目前有多大的程度認為自己正在過著有目的且具意義的生活？", domain:"M", officialNo:7,  anchors:["一點也不","完全如此"] },
+  { text:"有多少的時間你認為自己正在往要完成的目標前進？",                     domain:"A", officialNo:1,  anchors:["從來沒有","總是如此"] },
+  { text:"你有多常能夠全心投入你正在進行的事件中？",                           domain:"E", officialNo:2,  anchors:["從來沒有","總是如此"] },
+  { text:"一般而言，你會認為自己的健康狀態如何？",                             domain:"H", officialNo:6,  anchors:["非常糟糕","非常好"] },
+  { text:"一般而言，你有多常感到愉悅？",                                       domain:"P", officialNo:3,  anchors:["從來沒有","總是如此"] },
+  { text:"當你需要時，你從他人獲得幫助和支持的程度是？",                       domain:"R", officialNo:8,  anchors:["一點也不","完全如此"] },
+  { text:"一般而言，你有多常感到焦慮？",                                       domain:"N", officialNo:4,  anchors:["從來沒有","總是如此"] },
+  { text:"你有多常完成你為自己所設定的重要目標？",                             domain:"A", officialNo:5,  anchors:["從來沒有","總是如此"] },
+  { text:"一般而言，你感到在生活中所做的是有價值且值得的程度是？",             domain:"M", officialNo:9,  anchors:["一點也不","完全如此"] },
+  { text:"一般而言，你有多常感到正向？",                                       domain:"P", officialNo:13, anchors:["從未如此","總是如此"] },
+  { text:"一般而言，在事物上你感到興奮和有趣的程度是？",                       domain:"E", officialNo:10, anchors:["一點也不","完全如此"] },
+  { text:"在你的日常生活中，你感到多孤單？",                                   domain:"LONELY", officialNo:11, anchors:["一點也不","完全如此"] },
+  { text:"你對於目前的身體健康有多滿意？",                                     domain:"H", officialNo:12, anchors:["一點也不","相當滿意"] },
+  { text:"一般而言，你有多常感到憤怒？",                                       domain:"N", officialNo:14, anchors:["從未如此","總是如此"] },
+  { text:"你感到被愛的程度是？",                                               domain:"R", officialNo:19, anchors:["一點也不","完全如此"] },
+  { text:"你有多常能夠掌握並處理好自己的責任？",                               domain:"A", officialNo:15, anchors:["從未如此","總是如此"] },
+  { text:"你通常覺得自己生活有方向感的程度是？",                               domain:"M", officialNo:20, anchors:["一點也不","完全如此"] },
+  { text:"相對於其他同年齡與性別者，你的健康如何？",                           domain:"H", officialNo:18, anchors:["非常糟糕","非常好"] },
+  { text:"你對自己的人際關係感到滿意的程度是？",                               domain:"R", officialNo:21, anchors:["一點也不","完全如此"] },
+  { text:"一般而言，你有多常感到悲傷？",                                       domain:"N", officialNo:16, anchors:["從未如此","總是如此"] },
+  { text:"你有多常投入在做你感到愉悅的事時忘掉時間？",                         domain:"E", officialNo:17, anchors:["從未如此","總是如此"] },
+  { text:"一般而言，你感到滿足的程度是？",                                     domain:"P", officialNo:22, anchors:["一點也不","完全如此"] },
+  { text:"整體而言，你認為你自己有多快樂？",                                   domain:"HAPPY", officialNo:23, anchors:["一點也不","完全如此"] }
+];
+const domainLabels = { P:"正向情緒", E:"投入感", R:"人際關係", M:"意義感", A:"成就感", N:"負向情緒", H:"健康", LONELY:"孤獨感", HAPPY:"整體快樂感" };
+
+/* ---------------- STATE ---------------- */
+let currentStep = 0;
+const answers = { pss: Array(pssItems.length).fill(null), gse: Array(gseItems.length).fill(null), perma: Array(permaItems.length).fill(null) };
+
+const stepNames = ["基本資料","壓力知覺 (PSS-10)","自我效能 (GSE)","職場幸福感 (PERMA)","確認送出",""];
+
+/* ---------------- RENDER ---------------- */
+function renderLikert(container, items, options, groupName, answerArr, scaleMax){
+  let html = "";
+  items.forEach((text, idx) => {
+    html += `<div class="qitem"><span class="qnum">Q${idx+1}</span><div class="qtext">${text}</div><div class="likert">`;
+    options.forEach((label, oi) => {
+      const val = oi;
+      html += `<label><input type="radio" name="${groupName}_${idx}" value="${val}" onchange="setAnswer('${groupName}',${idx},${val})">
+        <span class="opt"><span class="num">${val}</span>${label}</span></label>`;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderPerma(container){
+  let html = "";
+  permaItems.forEach((item, idx) => {
+    html += `
+      <div class="qitem unanswered" id="perma_item_${idx}">
+        <span class="qnum">Q${idx+1}</span>
+        <div class="qtext">${item.text}</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="10" step="1" value="5" class="slider untouched"
+                 id="perma_${idx}" oninput="onSliderInput(${idx})">
+          <div class="slider-value unanswered" id="perma_val_${idx}">尚未作答</div>
+        </div>
+        <div class="slider-anchors"><span>0 = ${item.anchors[0]}</span><span>10 = ${item.anchors[1]}</span></div>
+        <div class="slider-hint">請拖曳滑桿選出分數</div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function onSliderInput(idx){
+  const el = document.getElementById(`perma_${idx}`);
+  const valEl = document.getElementById(`perma_val_${idx}`);
+  const itemEl = document.getElementById(`perma_item_${idx}`);
+  el.dataset.touched = "true";
+  el.classList.remove("untouched");
+  valEl.classList.remove("unanswered");
+  valEl.textContent = el.value;
+  itemEl.classList.remove("unanswered");
+  answers.perma[idx] = parseInt(el.value, 10);
+}
+
+function setAnswer(group, idx, val){
+  answers[group][idx] = val;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderLikert(document.getElementById("pssContainer"), pssItems, pssOptions, "pss", answers.pss);
+  renderLikert(document.getElementById("gseContainer"), gseItems, gseOptions, "gse", answers.gse);
+  renderPerma(document.getElementById("permaContainer"));
+  updateProgress();
+});
+
+/* ---------------- NAVIGATION ---------------- */
+function goStep(n){
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add("active");
+  currentStep = n;
+  updateProgress();
+  window.scrollTo({top:0, behavior:"smooth"});
+  if(n === 4){ buildReview(); }
+}
+
+function tryNext(stepIdx, nextStep){
+  const arr = stepIdx===1 ? answers.pss : stepIdx===2 ? answers.gse : answers.perma;
+  const incomplete = arr.some(v => v===null);
+  const errEl = document.getElementById("err"+stepIdx);
+  if(incomplete){
+    errEl.style.display = "block";
+    return;
+  }
+  errEl.style.display = "none";
+  goStep(nextStep);
+}
+
+function updateProgress(){
+  const total = 5; // steps 0-4 shown in progress; step 5 is the thank-you screen
+  const pct = Math.min(currentStep, total) / total * 100;
+  document.getElementById("railFill").style.width = pct + "%";
+  document.getElementById("stepLabel").textContent = `第 ${Math.min(currentStep+1,5)} 步／共 5 步`;
+  document.getElementById("stepName").textContent = stepNames[currentStep] || "";
+}
+
+/* ---------------- SCORING ---------------- */
+function computeScores(){
+  let pssTotal = 0;
+  answers.pss.forEach((v, i) => {
+    const itemNum = i+1;
+    pssTotal += pssReverse.includes(itemNum) ? (4 - v) : v;
+  });
+  let pssLevel = pssTotal <= 13 ? "壓力程度低" : pssTotal <= 26 ? "壓力程度中等" : "壓力程度高";
+
+  const gseTotal = answers.gse.reduce((a,b) => a + (b+1), 0); // stored 0-3 -> scored 1-4
+
+  const byDomain = { P:[], E:[], R:[], M:[], A:[], N:[], H:[], LONELY:[], HAPPY:[] };
+  permaItems.forEach((item, idx) => byDomain[item.domain].push(answers.perma[idx]));
+  const avg = arr => (arr.reduce((a,b)=>a+b,0) / arr.length);
+  const domainAverages = {
+    P: avg(byDomain.P).toFixed(1),
+    E: avg(byDomain.E).toFixed(1),
+    R: avg(byDomain.R).toFixed(1),
+    M: avg(byDomain.M).toFixed(1),
+    A: avg(byDomain.A).toFixed(1),
+    N: avg(byDomain.N).toFixed(1),
+    H: avg(byDomain.H).toFixed(1),
+    LONELY: byDomain.LONELY[0],
+    HAPPY: byDomain.HAPPY[0]
+  };
+  // 整體積極富能指標（O）：依陳春宇、卓淑玲（2022）沿用 Butler & Kern（2016）的算法，
+  // 以 P/E/R/M/A 五向度共15題原始分數 + 整體快樂程度1題，共16題，直接取平均（非五個向度平均值再平均）
+  const flourishItems = [...byDomain.P, ...byDomain.E, ...byDomain.R, ...byDomain.M, ...byDomain.A, ...byDomain.HAPPY];
+  const permaTotal = avg(flourishItems).toFixed(1);
+
+  return { pssTotal, pssLevel, gseTotal, permaTotal, domainAverages };
+}
+
+function buildReview(){
+  const s = computeScores();
+  const name = document.getElementById("name").value || "（未填寫姓名）";
+  document.getElementById("reviewSummary").innerHTML =
+    `<strong>${name}</strong>，你已完成全部 ${pssItems.length + gseItems.length + answers.perma.length} 題。<br>
+     送出後將無法修改本次紀錄，如需確認可先按「上一步」檢查。`;
+}
+
+/* ---------------- SUBMIT ---------------- */
+function submitForm(){
+  const s = computeScores();
+  const payload = {
+    name: document.getElementById("name").value,
+    department: document.getElementById("department").value,
+    employeeId: document.getElementById("employeeId").value,
+    pssTotal: s.pssTotal,
+    pssLevel: s.pssLevel,
+    gseTotal: s.gseTotal,
+    permaTotal: s.permaTotal,
+    permaP: s.domainAverages.P,
+    permaE: s.domainAverages.E,
+    permaR: s.domainAverages.R,
+    permaM: s.domainAverages.M,
+    permaA: s.domainAverages.A,
+    permaN: s.domainAverages.N,
+    permaHealth: s.domainAverages.H,
+    permaLonely: s.domainAverages.LONELY,
+    permaHappy: s.domainAverages.HAPPY,
+    answers: { pss: answers.pss, gse: answers.gse, perma: answers.perma },
+    submittedAt: new Date().toISOString()
+  };
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "送出中...";
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    goStep(5);
+  }).catch(() => {
+    // no-cors 模式下無法讀取回應狀態，即使成功也可能落入這裡；仍視為送出成功
+    goStep(5);
+  });
+}
+</script>
+
+
+</body></html>
