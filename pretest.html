@@ -268,19 +268,20 @@ const pssItems = [
 const pssReverse = [4,5,7,8]; // 1-indexed items that are positively worded (reverse-scored)
 const pssOptions = ["從不","偶爾","有時","時常","總是"]; // 0-4
 
+// 中文版一般自我效能量表 CGSE (Leung, D.Y.P., & Leung, A.Y.M., 2011)
 const gseItems = [
-  "如果我盡力去做，我總是能夠解決困難的問題",
-  "即使有人反對，我還是能找到辦法達成我想要的目標",
-  "對我來說，堅持自己的理想並達成目標並不困難",
-  "我有信心能有效應對任何意外發生的狀況",
-  "憑藉我的應變能力，我知道如何處理不可預期的狀況",
-  "只要我願意付出必要的努力，就能解決大多數的問題",
-  "我能冷靜面對困難，因為我可以信賴自己處理問題的能力",
-  "當我遇到問題時，我通常能想到好幾個解決方法",
-  "遇到困境時，我通常能想出應對的辦法",
-  "無論發生什麼事，我通常都能妥善處理"
+  "如果我盡力去做的話，我總是能夠解決難題的",
+  "即使別人反對我，我仍有辦法取得我所要的",
+  "對我來說，堅持理想和達成目標是輕而易舉的",
+  "我自信能有效地應付任何突如其來的事情",
+  "以我的才智，我定能應付意料之外的情況",
+  "如果我付出必要的努力，我一定能解決大多數的難題",
+  "我能冷靜地面對難題，因為我可以信賴自己處理問題的能力",
+  "面對一個難題時，我通常能想到一些應付的方法",
+  "有麻煩的時候，我通常能想到一些應付的方法",
+  "無論甚麼事在我身上發生，我都能應付自如"
 ];
-const gseOptions = ["完全不正確","有些正確","大多正確","完全正確"]; // 1-4
+const gseOptions = ["完全不正確","尚算正確","多數正確","完全正確"]; // 1-4
 
 // PERMA-Profiler（Butler & Kern, 2016；中文版信效度：陳春宇、卓淑玲，2022）
 // officialNo = 原始量表題號，用來對應官方的計分分組與定錨語
@@ -414,8 +415,8 @@ function computeScores(){
   let pssLevel = pssTotal <= 13 ? "壓力程度低" : pssTotal <= 26 ? "壓力程度中等" : "壓力程度高";
 
   const gseTotal = answers.gse.reduce((a,b) => a + (b+1), 0); // stored 0-3 -> scored 1-4
-  // 常用參考區間（GSE原作者Schwarzer & Jerusalem未公布官方切點，此為文獻上常見的實務參考帶）
-  let gseLevel = gseTotal <= 20 ? "自我效能偏低" : gseTotal <= 30 ? "自我效能中等" : "自我效能良好";
+  // 分級依據：CGSE中文版官方得分建議（Leung & Leung, 2011）
+  let gseLevel = gseTotal >= 35 ? "自我效能優良" : gseTotal >= 26 ? "自我效能良好" : gseTotal >= 16 ? "自我效能一般" : "自我效能偏低";
 
   const byDomain = { P:[], E:[], R:[], M:[], A:[], N:[], H:[], LONELY:[], HAPPY:[] };
   permaItems.forEach((item, idx) => byDomain[item.domain].push(answers.perma[idx]));
