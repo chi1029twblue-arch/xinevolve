@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>心進化｜新任主管陪跑計劃 前測問卷</title>
+<title>心進化｜春源鋼鐵主管韌力領導訓練 韌力評估問卷</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -148,7 +148,7 @@
 
   <div class="brandbar">
     <div class="brand">心進化 <span>SwitchMind</span></div>
-    <div class="brand" style="color:var(--ink-soft); font-weight:400;">春源鋼鐵・新任主管陪跑計劃</div>
+    <div class="brand" style="color:var(--ink-soft); font-weight:400;">春源鋼鐵主管韌力領導訓練</div>
   </div>
 
   <div class="rail"><div class="rail-fill" id="railFill"></div></div>
@@ -158,9 +158,9 @@
 
     <!-- STEP 0: Intro / basic info -->
     <section class="step active" data-step="0">
-      <div class="eyebrow">前測 · 開課前</div>
-      <h1>在課程開始之前，先為自己拍一張「現況照片」</h1>
-      <p class="sub">這份前測會在第一堂課後、第二堂課後再各做一次，用來看見你在這段陪跑歷程中的變化，不是用來評分或比較。請依照最近一個月的真實感受作答，沒有標準答案。</p>
+      <div class="eyebrow">韌力評估</div>
+      <h1>現況評估</h1>
+      <p class="sub">本評估將於訓練歷程中的不同階段重複實施，用以了解您在訓練期間的變化情形，其結果不作為評分或比較之用。請依照近期實際感受作答，答案並無對錯之分。</p>
       <div class="note">填答時間約 6-8 分鐘。作答內容僅提供講師掌握團隊整體狀態，個人資料不會另作他用。</div>
 
       <div class="field">
@@ -198,7 +198,7 @@
     <!-- STEP 2: GSE -->
     <section class="step" data-step="2">
       <div class="eyebrow">量表二 · 自我效能</div>
-      <h2>面對挑戰時，你對自己的看法是？</h2>
+      <h2>面對挑戰時，您對自身能力的看法為何？</h2>
       <p class="sub">請依照「符合自己實際狀況」的程度作答。</p>
       <div id="gseContainer"></div>
       <div class="err" id="err2">請完成所有題目後再繼續。</div>
@@ -211,8 +211,8 @@
     <!-- STEP 3: PERMA -->
     <section class="step" data-step="3">
       <div class="eyebrow">量表三 · 幸福感 (PERMA)</div>
-      <h2>整體來說，最近的你是這樣嗎？</h2>
-      <p class="sub">每題請拖曳滑桿選出最符合你最近狀態的分數，兩端的文字說明會依題目而不同。</p>
+      <h2>整體而言，下列描述是否符合您目前的狀態？</h2>
+      <p class="sub">請針對每一題拖曳滑桿，選出最符合您目前狀態的分數，兩端文字說明將依題目而不同。</p>
       <div id="permaContainer"></div>
       <div class="err" id="err3">請完成所有題目後再繼續。</div>
       <div class="nav">
@@ -225,11 +225,11 @@
     <section class="step" data-step="4">
       <div class="eyebrow">最後一步</div>
       <h2>確認送出</h2>
-      <p class="sub">送出後即完成前測。這份記錄會在課程結束後，成為你回顧自己變化的重要參考。</p>
+      <p class="sub">送出後即完成本次評估，本紀錄將作為後續追蹤變化之參考。</p>
       <div class="note" id="reviewSummary"></div>
       <div class="nav">
         <button class="btn-ghost" onclick="goStep(3)">上一步</button>
-        <button class="btn-primary" id="submitBtn" onclick="submitForm()">送出前測</button>
+        <button class="btn-primary" id="submitBtn" onclick="submitForm()">送出評估</button>
       </div>
     </section>
 
@@ -238,8 +238,8 @@
       <div class="done-icon">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" stroke="#2F6F62" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h1>前測已完成，謝謝你的誠實作答</h1>
-      <p class="sub">這只是這段陪跑歷程的起點。我們在第一堂課見。</p>
+      <h1>評估已完成，感謝您的填答</h1>
+      <p class="sub">本次評估結果將作為訓練規劃之參考依據。</p>
     </section>
 
   </div>
@@ -414,6 +414,8 @@ function computeScores(){
   let pssLevel = pssTotal <= 13 ? "壓力程度低" : pssTotal <= 26 ? "壓力程度中等" : "壓力程度高";
 
   const gseTotal = answers.gse.reduce((a,b) => a + (b+1), 0); // stored 0-3 -> scored 1-4
+  // 常用參考區間（GSE原作者Schwarzer & Jerusalem未公布官方切點，此為文獻上常見的實務參考帶）
+  let gseLevel = gseTotal <= 20 ? "自我效能偏低" : gseTotal <= 30 ? "自我效能中等" : "自我效能良好";
 
   const byDomain = { P:[], E:[], R:[], M:[], A:[], N:[], H:[], LONELY:[], HAPPY:[] };
   permaItems.forEach((item, idx) => byDomain[item.domain].push(answers.perma[idx]));
@@ -433,16 +435,19 @@ function computeScores(){
   // 以 P/E/R/M/A 五向度共15題原始分數 + 整體快樂程度1題，共16題，直接取平均（非五個向度平均值再平均）
   const flourishItems = [...byDomain.P, ...byDomain.E, ...byDomain.R, ...byDomain.M, ...byDomain.A, ...byDomain.HAPPY];
   const permaTotal = avg(flourishItems).toFixed(1);
+  // 幸福感等級：依PERMA-Profiler共同作者Peggy Kern於官方網站建議的功能分級（peggykern.org/questionnaires.html）
+  const oNum = parseFloat(permaTotal);
+  let permaLevel = oNum >= 9 ? "非常優異" : oNum >= 8 ? "良好" : oNum >= 6.5 ? "一般" : oNum >= 5 ? "待提升" : "低落";
 
-  return { pssTotal, pssLevel, gseTotal, permaTotal, domainAverages };
+  return { pssTotal, pssLevel, gseTotal, gseLevel, permaTotal, permaLevel, domainAverages };
 }
 
 function buildReview(){
   const s = computeScores();
   const name = document.getElementById("name").value || "（未填寫姓名）";
   document.getElementById("reviewSummary").innerHTML =
-    `<strong>${name}</strong>，你已完成全部 ${pssItems.length + gseItems.length + answers.perma.length} 題。<br>
-     送出後將無法修改本次紀錄，如需確認可先按「上一步」檢查。`;
+    `<strong>${name}</strong>，您已完成全部 ${pssItems.length + gseItems.length + answers.perma.length} 題。<br>
+     送出後將無法修改本次紀錄，如需確認作答內容，請先點選「上一步」檢查。`;
 }
 
 /* ---------------- SUBMIT ---------------- */
@@ -455,7 +460,9 @@ function submitForm(){
     pssTotal: s.pssTotal,
     pssLevel: s.pssLevel,
     gseTotal: s.gseTotal,
+    gseLevel: s.gseLevel,
     permaTotal: s.permaTotal,
+    permaLevel: s.permaLevel,
     permaP: s.domainAverages.P,
     permaE: s.domainAverages.E,
     permaR: s.domainAverages.R,
