@@ -439,7 +439,17 @@ function computeScores(){
   const oNum = parseFloat(permaTotal);
   let permaLevel = oNum >= 9 ? "非常優異" : oNum >= 8 ? "良好" : oNum >= 6.5 ? "一般" : oNum >= 5 ? "待提升" : "低落";
 
-  return { pssTotal, pssLevel, gseTotal, gseLevel, permaTotal, permaLevel, domainAverages };
+  // 各核心向度等級：套用同一組分級門檻到單一向度分數（0-10），為延伸參考，非官方針對單一向度驗證之切點
+  const levelFromScore = v => v >= 9 ? "非常優異" : v >= 8 ? "良好" : v >= 6.5 ? "一般" : v >= 5 ? "待提升" : "低落";
+  const domainLevels = {
+    P: levelFromScore(parseFloat(domainAverages.P)),
+    E: levelFromScore(parseFloat(domainAverages.E)),
+    R: levelFromScore(parseFloat(domainAverages.R)),
+    M: levelFromScore(parseFloat(domainAverages.M)),
+    A: levelFromScore(parseFloat(domainAverages.A))
+  };
+
+  return { pssTotal, pssLevel, gseTotal, gseLevel, permaTotal, permaLevel, domainAverages, domainLevels };
 }
 
 function buildReview(){
@@ -464,10 +474,15 @@ function submitForm(){
     permaTotal: s.permaTotal,
     permaLevel: s.permaLevel,
     permaP: s.domainAverages.P,
+    permaPLevel: s.domainLevels.P,
     permaE: s.domainAverages.E,
+    permaELevel: s.domainLevels.E,
     permaR: s.domainAverages.R,
+    permaRLevel: s.domainLevels.R,
     permaM: s.domainAverages.M,
+    permaMLevel: s.domainLevels.M,
     permaA: s.domainAverages.A,
+    permaALevel: s.domainLevels.A,
     permaN: s.domainAverages.N,
     permaHealth: s.domainAverages.H,
     permaLonely: s.domainAverages.LONELY,
