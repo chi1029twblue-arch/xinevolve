@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -126,12 +125,43 @@
 
   .err{ color: var(--danger); font-size: 13px; margin-top: 10px; display:none; }
 
+  .feedback-box {
+    margin-top: 24px;
+    background: var(--teal-soft);
+    border-left: 4px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: #2a4a42;
+  }
+  .feedback-box .fb-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
   .step{ display:none; }
   .step.active{ display:block; animation: fadein .35s ease; }
   @keyframes fadein{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
 
   .done-icon{ width:56px; height:56px; border-radius:50%; background: var(--teal-soft); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
   .done-icon svg{ width:28px; height:28px; }
+
+  #batchBadge:not(:empty){
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 10px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
 
   footer{ text-align:center; font-size:12px; color: var(--ink-soft); margin-top: 26px; opacity:.8; }
 
@@ -148,7 +178,7 @@
 
   <div class="brandbar">
     <div class="brand">心進化 <span>SwitchMind</span></div>
-    <div class="brand" style="color:var(--ink-soft); font-weight:400;">春源鋼鐵主管韌力領導訓練</div>
+    <div class="brand" style="color:var(--ink-soft); font-weight:400;">春源鋼鐵主管韌力領導訓練<span id="batchBadge"></span></div>
   </div>
 
   <div class="rail"><div class="rail-fill" id="railFill"></div></div>
@@ -164,17 +194,14 @@
       <div class="note">填答時間約 6-8 分鐘。作答內容僅提供講師掌握團隊整體狀態，個人資料不會另作他用。</div>
 
       <div class="field">
-        <label for="name">姓名</label>
-        <input type="text" id="name" placeholder="請輸入您的姓名">
+        <label for="name">怎麼稱呼</label>
+        <input type="text" id="name" placeholder="請輸入您的稱呼">
       </div>
       <div class="field">
         <label for="department">部門 / 單位</label>
         <input type="text" id="department" placeholder="例如：品保部、製造二課">
       </div>
-      <div class="field">
-        <label for="employeeId">工號（選填）</label>
-        <input type="text" id="employeeId" placeholder="若不清楚可留空">
-      </div>
+
 
       <div class="nav">
         <span></span>
@@ -240,6 +267,10 @@
       </div>
       <h1>評估已完成，感謝您的填答</h1>
       <p class="sub">本次評估結果將作為訓練規劃之參考依據。</p>
+      <div class="feedback-box" id="feedbackBox" style="display:none;">
+        <div class="fb-label">給你的小回饋</div>
+        <div id="feedbackText"></div>
+      </div>
     </section>
 
   </div>
@@ -455,7 +486,7 @@ function computeScores(){
 
 function buildReview(){
   const s = computeScores();
-  const name = document.getElementById("name").value || "（未填寫姓名）";
+  const name = document.getElementById("name").value || "（未填寫稱呼）";
   document.getElementById("reviewSummary").innerHTML =
     `<strong>${name}</strong>，您已完成全部 ${pssItems.length + gseItems.length + answers.perma.length} 題。<br>
      送出後將無法修改本次紀錄，如需確認作答內容，請先點選「上一步」檢查。`;
@@ -467,7 +498,7 @@ function submitForm(){
   const payload = {
     name: document.getElementById("name").value,
     department: document.getElementById("department").value,
-    employeeId: document.getElementById("employeeId").value,
+
     pssTotal: s.pssTotal,
     pssLevel: s.pssLevel,
     gseTotal: s.gseTotal,
@@ -502,11 +533,35 @@ function submitForm(){
     headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(payload)
   }).then(() => {
+    showFeedback(s.pssTotal);
     goStep(5);
   }).catch(() => {
     // no-cors 模式下無法讀取回應狀態，即使成功也可能落入這裡；仍視為送出成功
+    showFeedback(s.pssTotal);
     goStep(5);
   });
+}
+
+/* ---------------- BATCH LABEL ---------------- */
+(function(){
+  const batch = new URLSearchParams(window.location.search).get('batch');
+  const badge = document.getElementById('batchBadge');
+  if (batch === '1') badge.textContent = '第一梯次';
+  else if (batch === '2') badge.textContent = '第二梯次';
+})();
+
+/* ---------------- FEEDBACK ---------------- */
+function showFeedback(pssTotal) {
+  let msg = "";
+  if (pssTotal >= 27) {
+    msg = "你最近扛著不少。光是今天願意停下來填這份問卷，就已經是第一步了。課程的「心坐下」環節，會讓你有個地方先把這些放一放、好好看看現在的狀態，你不需要一個人撐。";
+  } else if (pssTotal >= 14) {
+    msg = "你目前在一個適應期，有些事情還不太順，有些感受說不清楚。課程會幫你把那些說不清楚的找到出口，也讓你看見，自己其實比想像中更有力量。";
+  } else {
+    msg = "你現在的狀態還不錯。課程可以幫你在壓力真正來之前，就先備好工具——這樣當困難出現，你會知道自己有資源可以用，不需要從零開始。";
+  }
+  document.getElementById("feedbackText").textContent = msg;
+  document.getElementById("feedbackBox").style.display = "block";
 }
 </script>
 </body>
