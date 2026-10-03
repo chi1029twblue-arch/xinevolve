@@ -27,8 +27,9 @@ index.html：讀 history.json 畫出
 
 1. **取得 Travelpayouts token（必要，免費）**
    到 <https://www.travelpayouts.com> 註冊 → 個人設定（Profile）→ API token。
-2. **（選用）SerpApi key**：<https://serpapi.com> 免費方案的額度足夠每天查 3 組日期。
-   有這個才會有「Google 判定偏低／偏高」的價格水準，買點判斷更準。
+2. **（選用但建議）SerpApi key**：<https://serpapi.com> 註冊後在 Dashboard 複製 API key。
+   免費方案每月 250 次查詢；預設每次執行查 3 組日期（一天 6 次、一個月約 180 次）。
+   有這個才會有 Google 航班的即時價與「偏低／一般／偏高」價格水準。
 3. **（選用）通知管道**，二擇一或都設：
    - Telegram：找 `@BotFather` 建 bot 取得 token；傳一則訊息給 bot 後，
      開 `https://api.telegram.org/bot<TOKEN>/getUpdates` 找到 `chat.id`
@@ -58,7 +59,9 @@ index.html：讀 history.json 畫出
 | `target_price` | 來回低於這個價錢就通知（台幣） |
 | `outbound_time` / `return_time` | 去程 / 回程的起飛時段（當地時間），預設避開太早、太晚的航班 |
 | `lcc_bag_fee_roundtrip` | 廉價航空每人來回的託運行李估算費用；所有價格都以「含行李」比較 |
-| `serpapi_top_n` | 每次用 Google 航班複查幾組最便宜日期 |
+| `google.queries_per_run` | 每次執行問 Google 航班幾組日期（免費額度每月 250 次，排程一天跑兩次） |
+| `google.trip_days` | Google 輪流查詢時採用的停留天數 |
+| `google.keep_days` | Google 查到的價格保留幾天，期間內不重查同一組日期 |
 | `origin` | 改 `KHH` 可看高雄出發 |
 
 本機測試：`TRAVELPAYOUTS_TOKEN=xxx python3 flight-monitor/monitor.py --dry-run`

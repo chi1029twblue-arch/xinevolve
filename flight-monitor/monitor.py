@@ -3,7 +3,7 @@
 
 每次執行：
   1. 從 Travelpayouts（Aviasales Data API，免費）抓取出發窗口內所有來回組合的最低價
-  2. （選用）把目前最便宜的前幾組日期丟到 Google 航班（SerpApi）複查即時價與「價格水準」
+  2. （選用）Google 航班（SerpApi）：在每月免費額度內輪流查窗口內的日期，取得即時價與「價格水準」
   3. 把結果附加到 data/history.json，供 index.html 儀表板畫圖
   4. 若出現新低價或低於目標價，透過 Telegram / Discord 通知
 
@@ -134,10 +134,14 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
                     continue
                 if not (time_ok(out_t, cfg["outbound_time"]) and time_ok(back_t, cfg["return_time"])):
                     continue
+                stops = max(row.get("transfers", 0), row.get("return_transfers", 0))
+                if cfg.get("direct_only") and stops:
+                    continue
                 airline = row.get("airline", "")
                 bags_included = airline not in LCC_AIRLINES
                 bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"]
                 offer = {
+                    "source": "aviasales",
                     "depart": depart,
                     "return": ret,
                     "dep_time": out_t.strftime("%H:%M"),
@@ -150,7 +154,7 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
                     "flight": f'{row.get("airline", "")}{row.get("flight_number", "")}',
                     "from": row.get("origin_airport", cfg["origin"]),
                     "to": row.get("destination_airport", ""),
-                    "stops": max(row.get("transfers", 0), row.get("return_transfers", 0)),
+                    "stops": stops,
                     "link": "https://www.aviasales.com" + row["link"] if row.get("link") else "",
                 }
                 key = (depart, ret)
@@ -159,41 +163,146 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
     return sorted(best.values(), key=lambda o: (o["depart"], o["return"]))
 
 
-def fetch_serpapi_insights(cfg: dict, key: str, offers: list[dict]) -> list[dict]:
-    """價格優先：拿目前最便宜的前 N 組日期去 Google 航班複查，取得即時價與價格水準（low / typical / high）。"""
-    out = []
-    top = sorted(offers, key=lambda o: o["price"])[: cfg.get("serpapi_top_n", 3)]
-    for pair in top:
+def google_candidates(cfg: dict, offers: list[dict], history: dict, today: date) -> list[tuple[str, str]]:
+    """決定這次要問 Google 航班哪幾組日期（受每月免費額度限制）。
+
+    1. 目前 Aviasales 最便宜的那組（若近期沒查過），用來交叉確認好價
+    2. 其餘在窗口內輪流：停留 trip_days 天的每個出發日，最久沒查的優先
+    """
+    g = cfg["google"]
+    checked = history.get("google_checked", {})
+    keep = timedelta(days=g["keep_days"])
+
+    def fresh(key: str) -> bool:
+        return key in checked and today - date.fromisoformat(checked[key]) < keep
+
+    picks: list[tuple[str, str]] = []
+    for o in sorted(offers, key=lambda o: o["price"])[:1]:
+        if not fresh(f'{o["depart"]}|{o["return"]}'):
+            picks.append((o["depart"], o["return"]))
+
+    pool = []
+    d, end = date.fromisoformat(cfg["depart_from"]), date.fromisoformat(cfg["depart_to"])
+    while d <= end:
+        for t in g["trip_days"]:
+            key = f"{d}|{d + timedelta(days=t)}"
+            pool.append((checked.get(key, "0000-00-00"), d.isoformat(), (d + timedelta(days=t)).isoformat()))
+        d += timedelta(days=1)
+    for _, dep, ret in sorted(pool):
+        if len(picks) >= g["queries_per_run"]:
+            break
+        if (dep, ret) not in picks:
+            picks.append((dep, ret))
+    return picks[: g["queries_per_run"]]
+
+
+def fetch_google(cfg: dict, key: str, pairs: list[tuple[str, str]], today: date) -> tuple[list[dict], list[dict]]:
+    """用 SerpApi 查 Google 航班。回傳 (符合條件的最便宜報價, 價格水準資訊)。
+
+    Google 的來回搜尋第一頁只列去程航班，價格已是來回總價（回程由 Google 依 return_times 篩選），
+    所以回程起飛時間記為空字串。
+    """
+    hours = lambda w: f"{int(w[0][:2])},{int(w[1][:2])}"
+    offers, insights = [], []
+    for dep, ret in pairs:
         params = {
             "engine": "google_flights",
             "departure_id": cfg["origin"],
             "arrival_id": TOKYO_AIRPORTS,
-            "outbound_date": pair["depart"],
-            "return_date": pair["return"],
+            "outbound_date": dep,
+            "return_date": ret,
             "type": 1,
+            "adults": 1,
             "currency": cfg["currency"],
             "hl": "zh-TW",
             "gl": "tw",
+            "sort_by": 2,
+            "stops": 1 if cfg.get("direct_only") else 0,
+            "outbound_times": hours(cfg["outbound_time"]),
+            "return_times": hours(cfg["return_time"]),
             "api_key": key,
         }
         try:
             body = http_get_json(SERPAPI_URL, params)
-        except urllib.error.HTTPError as e:
-            print(f"  SerpApi {pair} 失敗：{e}", file=sys.stderr)
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            print(f"  SerpApi {dep}→{ret} 失敗：{e}", file=sys.stderr)
             continue
-        insight = body.get("price_insights", {})
-        flights = body.get("best_flights", []) + body.get("other_flights", [])
-        cheapest = min(flights, key=lambda f: f.get("price", 10**9), default=None)
-        out.append({
-            "depart": pair["depart"],
-            "return": pair["return"],
-            "lowest": insight.get("lowest_price") or (cheapest or {}).get("price"),
-            "level": insight.get("price_level"),
-            "typical": insight.get("typical_price_range"),
-            "airline": ((cheapest or {}).get("flights") or [{}])[0].get("airline", ""),
-            "link": body.get("search_metadata", {}).get("google_flights_url", ""),
+        link = body.get("search_metadata", {}).get("google_flights_url", "")
+        best = None
+        for it in body.get("best_flights", []) + body.get("other_flights", []):
+            legs = it.get("flights") or []
+            if not legs or "price" not in it:
+                continue
+            stops = len(legs) - 1
+            if cfg.get("direct_only") and stops:
+                continue
+            dep_time = legs[0].get("departure_airport", {}).get("time", "")[-5:]
+            if not dep_time or not (cfg["outbound_time"][0] <= dep_time <= cfg["outbound_time"][1]):
+                continue
+            number = legs[0].get("flight_number", "")
+            code = number.split()[0] if number else ""
+            bags_included = code not in LCC_AIRLINES
+            bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"]
+            offer = {
+                "source": "google",
+                "depart": dep,
+                "return": ret,
+                "dep_time": dep_time,
+                "ret_time": "",
+                "fare": int(it["price"]),
+                "bag_fee": bag_fee,
+                "bags_included": bags_included,
+                "price": int(it["price"]) + bag_fee,
+                "airline": code,
+                "flight": number.replace(" ", ""),
+                "airline_name": legs[0].get("airline", ""),
+                "from": legs[0].get("departure_airport", {}).get("id", cfg["origin"]),
+                "to": legs[-1].get("arrival_airport", {}).get("id", ""),
+                "stops": stops,
+                "link": link,
+                "seen_at": today.isoformat(),
+            }
+            if best is None or offer["price"] < best["price"]:
+                best = offer
+        if best:
+            offers.append(best)
+        pi = body.get("price_insights") or {}
+        insights.append({
+            "depart": dep,
+            "return": ret,
+            "lowest": best["price"] if best else pi.get("lowest_price"),
+            "level": pi.get("price_level"),
+            "typical": pi.get("typical_price_range"),
+            "airline": (best or {}).get("airline_name", ""),
+            "matched": best is not None,
+            "link": link,
+            "seen_at": today.isoformat(),
         })
+    return offers, insights
+
+
+def carry_over(prev: list[dict], fresh_keys: set[str], today: date, keep_days: int) -> list[dict]:
+    """保留前一次快照裡、近 keep_days 天查過且這次沒重查的 Google 結果，讓價格地圖不會每天只剩幾格。"""
+    out = []
+    for x in prev:
+        if x.get("source", "google") != "google" and "level" not in x:
+            continue
+        key = f'{x["depart"]}|{x["return"]}'
+        seen = x.get("seen_at")
+        if key in fresh_keys or not seen:
+            continue
+        if (today - date.fromisoformat(seen)).days < keep_days:
+            out.append(x)
     return out
+
+
+def merge_offers(*groups: list[dict]) -> list[dict]:
+    best: dict[tuple[str, str], dict] = {}
+    for o in [o for g in groups for o in g]:
+        key = (o["depart"], o["return"])
+        if key not in best or o["price"] < best[key]["price"]:
+            best[key] = o
+    return sorted(best.values(), key=lambda o: (o["depart"], o["return"]))
 
 
 def load_history() -> dict:
@@ -212,6 +321,7 @@ def format_offer(o: dict) -> str:
         f'{o["depart"]} {o.get("dep_time", "")} → {o["return"]} {o.get("ret_time", "")}（{(date.fromisoformat(o["return"]) - date.fromisoformat(o["depart"])).days} 天）'
         f' 含行李 NT${o["price"]:,}{"" if o.get("bags_included", True) else "（廉航，含行李估算）"} {o["flight"]} {o["from"]}-{o["to"]}'
         f' {"直飛" if o["stops"] == 0 else "轉機 %d 次" % o["stops"]}'
+        f'{"［Google 航班］" if o.get("source") == "google" else ""}'
     )
 
 
@@ -251,21 +361,33 @@ def main() -> int:
     print(f"[{now:%Y-%m-%d %H:%M}] 查詢 {cfg['origin']} ⇄ {cfg['destination']}，"
           f"出發 {cfg['depart_from']} ~ {cfg['depart_to']}，停留 {cfg['min_trip_days']}-{cfg['max_trip_days']} 天")
 
-    offers = fetch_travelpayouts(cfg, token)
-    insights = fetch_serpapi_insights(cfg, os.environ["SERPAPI_KEY"], offers) if os.getenv("SERPAPI_KEY") else []
+    history = load_history()
+    today = now.date()
+    prev = history["snapshots"][-1] if history["snapshots"] else {}
+
+    tp_offers = fetch_travelpayouts(cfg, token)
+    g_offers, g_insights, pairs = [], [], []
+    if os.getenv("SERPAPI_KEY"):
+        pairs = google_candidates(cfg, tp_offers, history, today)
+        g_offers, g_insights = fetch_google(cfg, os.environ["SERPAPI_KEY"], pairs, today)
+    fresh = {f"{d}|{r}" for d, r in pairs}
+    keep = cfg["google"]["keep_days"]
+    offers = merge_offers(tp_offers, g_offers, carry_over(prev.get("offers", []), fresh, today, keep))
+    insights = sorted(g_insights + carry_over(prev.get("insights", []), fresh, today, keep),
+                      key=lambda i: (i.get("lowest") is None, i.get("lowest") or 0))
 
     cheapest = sorted(offers, key=lambda o: o["price"])[:5]
-    print(f"取得 {len(offers)} 組日期報價")
+    print(f"Aviasales {len(tp_offers)} 組、Google 新查 {len(pairs)} 組（{len(g_offers)} 組有符合條件的航班），合計 {len(offers)} 組日期")
     for o in cheapest:
         print("  " + format_offer(o))
-    for i in insights:
+    for i in g_insights:
         print(f'  Google 航班 {i["depart"]}→{i["return"]}：NT${i["lowest"]} 價格水準={i["level"]} 一般區間={i["typical"]}')
 
     if args.dry_run:
         return 0
 
-    history = load_history()
     prev_low = all_time_low(history)
+    history.setdefault("google_checked", {}).update({k: today.isoformat() for k in fresh})
     history["snapshots"].append({
         "checked_at": now.isoformat(timespec="minutes"),
         "offers": offers,
@@ -288,7 +410,7 @@ def main() -> int:
         reasons.append("觀測以來新低價" + (f"（先前最低 NT${prev_low:,}）" if prev_low else ""))
     if best["price"] <= cfg.get("target_price", 0):
         reasons.append(f'低於你的目標價 NT${cfg["target_price"]:,}')
-    low_levels = [i for i in insights if i.get("level") == "low"]
+    low_levels = [i for i in g_insights if i.get("level") == "low" and i.get("matched")]
     if low_levels:
         reasons.append("Google 航班判定為「偏低」價格：" + "、".join(f'{i["depart"]}出發' for i in low_levels))
 
