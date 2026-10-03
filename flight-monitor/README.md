@@ -56,6 +56,8 @@ index.html：讀 history.json 畫出
 | `min_trip_days` / `max_trip_days` | 停留天數範圍 |
 | `direct_only` | `true` 只看直飛 |
 | `target_price` | 來回低於這個價錢就通知（台幣） |
+| `outbound_time` / `return_time` | 去程 / 回程的起飛時段（當地時間），預設避開太早、太晚的航班 |
+| `lcc_bag_fee_roundtrip` | 廉價航空每人來回的託運行李估算費用；所有價格都以「含行李」比較 |
 | `serpapi_top_n` | 每次用 Google 航班複查幾組最便宜日期 |
 | `origin` | 改 `KHH` 可看高雄出發 |
 

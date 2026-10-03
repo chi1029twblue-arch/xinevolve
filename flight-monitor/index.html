@@ -78,6 +78,7 @@ header p { color: var(--text-2); font-size: 14px; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
 th { color: var(--text-2); font-weight: 500; font-size: 13px; }
+.bag { font-size: 12px; color: var(--text-2); font-weight: 400; white-space: nowrap; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
 .scroll { overflow-x: auto; }
 @media (max-width: 520px) {
@@ -145,6 +146,7 @@ const DAY = 86400000;
 const parseD = s => new Date(s + 'T00:00:00+08:00');
 const isoD = d => new Date(d.getTime() + 8 * 3600000).toISOString().slice(0, 10);
 const tripDays = o => Math.round((parseD(o.return) - parseD(o.depart)) / DAY);
+const bagText = o => o.bags_included === false ? `廉航：票價 ${fmt(o.fare)}＋行李約 ${fmt(o.bag_fee)}` : (o.bags_included ? '含託運行李' : '');
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
 const md = s => `${+s.slice(5, 7)}/${+s.slice(8, 10)}`;
 const mdw = s => `${md(s)}(${WD[new Date(s.slice(0, 10) + 'T00:00:00Z').getUTCDay()]})`;
@@ -280,15 +282,16 @@ function render(h) {
   const holBest = holCount[0];
 
   $('#meta').innerHTML = `${esc(a.cfg.origin)} ⇄ ${esc(a.cfg.destination)}（成田＋羽田）・出發 ${md(a.cfg.depart_from)}–${md(a.cfg.depart_to)}・停留 ${a.cfg.min_trip_days}–${a.cfg.max_trip_days} 天・`
+    + (a.cfg.outbound_time ? `去程 ${a.cfg.outbound_time.join('–')} 起飛・回程 ${a.cfg.return_time.join('–')} 起飛・` : '')
     + `${esc(a.hol.name)} ${md(a.hol.start)}–${md(a.hol.end)}・最後更新 ${new Date(h.updated_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false })}`;
 
   app.innerHTML = `
   <section class="card">
     <div class="kpis">
       <div class="kpi">
-        <div class="label">目前最便宜來回</div>
+        <div class="label">目前最便宜來回（含行李）</div>
         <div class="value">${fmt(best.price)}</div>
-        <div class="detail">${mdw(best.depart)} → ${mdw(best.return)}・${tripDays(best)} 天・${esc(best.flight)}</div>
+        <div class="detail">${mdw(best.depart)} ${best.dep_time || ''} → ${mdw(best.return)} ${best.ret_time || ''}・${tripDays(best)} 天・${esc(best.flight)}・${bagText(best)}</div>
       </div>
       <div class="kpi">
         <div class="label">觀測以來最低</div>
@@ -315,14 +318,14 @@ function render(h) {
 
   <section class="card">
     <h2>① 最便宜的 10 組日期</h2>
-    <p class="sub">價格優先排序 — 先看哪個價錢能接受，再確認日期能不能配合。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
+    <p class="sub">價格優先排序，價格已含一件託運行李：傳統航空本來就含，廉航另加估算的行李費。時間為當地起飛時間。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
     <div class="scroll"><table>
-      <thead><tr><th class="wide">#</th><th style="text-align:right">來回含稅</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th class="wide">機場</th><th></th></tr></thead>
+      <thead><tr><th class="wide">#</th><th style="text-align:right">含行李來回</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th class="wide">機場</th><th></th></tr></thead>
       <tbody>${a.ranked.slice(0, 10).map((o, i) => `<tr>
         <td class="wide">${i + 1}</td>
-        <td class="num">${fmt(o.price)}</td>
-        <td>${mdw(o.depart)}${a.inHol(o) ? '<br><span class="tag hol">連假</span>' : ''}</td>
-        <td>${mdw(o.return)}</td>
+        <td class="num">${fmt(o.price)}<br><span class="bag">${o.bags_included === false ? `含行李 +${(o.bag_fee / 1000).toFixed(1)}k` : '含託運'}</span></td>
+        <td>${mdw(o.depart)}${o.dep_time ? `<br><span class="bag">${o.dep_time}</span>` : ''}${a.inHol(o) ? '<br><span class="tag hol">連假</span>' : ''}</td>
+        <td>${mdw(o.return)}${o.ret_time ? `<br><span class="bag">${o.ret_time}</span>` : ''}</td>
         <td>${tripDays(o)} 天</td>
         <td>${esc(o.flight)}<br><span style="font-size:12px;color:var(--text-2)">${o.stops ? `轉機 ${o.stops} 次` : '直飛'}</span></td>
         <td class="wide">${esc(o.from)}–${esc(o.to)}</td>
@@ -403,7 +406,7 @@ function renderHeat(a) {
     const o = byKey.get(c.dataset.k);
     if (!o) return showTip(e, '這組日期目前沒有報價');
     const rank = a.ranked.indexOf(o) + 1;
-    showTip(e, `<b>${fmt(o.price)}</b>（第 ${rank} 便宜）<br>${mdw(o.depart)} → ${mdw(o.return)}・${tripDays(o)} 天<br>${esc(o.flight)} ${esc(o.from)}–${esc(o.to)} ${o.stops ? '轉機' : '直飛'}`);
+    showTip(e, `<b>${fmt(o.price)}</b>（第 ${rank} 便宜）<br>${mdw(o.depart)} ${o.dep_time || ''} → ${mdw(o.return)} ${o.ret_time || ''}・${tripDays(o)} 天<br>${bagText(o)}<br>${esc(o.flight)} ${esc(o.from)}–${esc(o.to)} ${o.stops ? '轉機' : '直飛'}`);
   };
   el.onmouseleave = hideTip;
 }
