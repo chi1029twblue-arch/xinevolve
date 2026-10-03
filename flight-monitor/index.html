@@ -80,6 +80,11 @@ th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--grid
 th { color: var(--text-2); font-weight: 500; font-size: 13px; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
 .scroll { overflow-x: auto; }
+@media (max-width: 520px) {
+  th, td { padding: 7px 3px; font-size: 12.5px; }
+  .wide { display: none; }
+  .card { padding: 16px 12px; }
+}
 .tag {
   display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 999px;
   border: 1px solid var(--border); color: var(--text-2);
@@ -131,6 +136,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; }
   <footer>價格來源：Travelpayouts / Aviasales 使用者近 48 小時搜尋快取（＋選用 Google 航班複查）。實際票價以訂位頁面為準。建議訊號為簡單經驗法則，不構成保證。</footer>
 </main>
 <div id="tip" role="tooltip"></div>
+<script type="application/json" id="embedded-data"></script>
 
 <script>
 const $ = (s, el = document) => el.querySelector(s);
@@ -311,15 +317,15 @@ function render(h) {
     <h2>① 最便宜的 10 組日期</h2>
     <p class="sub">價格優先排序 — 先看哪個價錢能接受，再確認日期能不能配合。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
     <div class="scroll"><table>
-      <thead><tr><th>#</th><th style="text-align:right">來回含稅</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th>機場</th><th></th></tr></thead>
+      <thead><tr><th class="wide">#</th><th style="text-align:right">來回含稅</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th class="wide">機場</th><th></th></tr></thead>
       <tbody>${a.ranked.slice(0, 10).map((o, i) => `<tr>
-        <td>${i + 1}</td>
+        <td class="wide">${i + 1}</td>
         <td class="num">${fmt(o.price)}</td>
-        <td>${mdw(o.depart)} ${a.inHol(o) ? '<span class="tag hol">連假</span>' : ''}</td>
+        <td>${mdw(o.depart)}${a.inHol(o) ? '<br><span class="tag hol">連假</span>' : ''}</td>
         <td>${mdw(o.return)}</td>
         <td>${tripDays(o)} 天</td>
-        <td>${esc(o.flight)} ${o.stops ? `<span class="tag">轉 ${o.stops}</span>` : '<span class="tag">直飛</span>'}</td>
-        <td>${esc(o.from)}–${esc(o.to)}</td>
+        <td>${esc(o.flight)}<br><span style="font-size:12px;color:var(--text-2)">${o.stops ? `轉機 ${o.stops} 次` : '直飛'}</span></td>
+        <td class="wide">${esc(o.from)}–${esc(o.to)}</td>
         <td>${o.link ? `<a href="${esc(o.link)}" target="_blank" rel="noopener">查看</a>` : ''}</td>
       </tr>`).join('')}</tbody>
     </table></div>
@@ -451,6 +457,8 @@ function renderTrend(a) {
 (async () => {
   const demo = new URLSearchParams(location.search).has('demo');
   if (demo) { $('#demo-banner').hidden = false; return render(makeDemo()); }
+  const embedded = $('#embedded-data')?.textContent.trim();
+  if (embedded) return render(JSON.parse(embedded));
   try {
     const r = await fetch('data/history.json?t=' + Date.now());
     if (!r.ok) throw new Error(r.status);
