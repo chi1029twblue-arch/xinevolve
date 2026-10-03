@@ -46,6 +46,24 @@ LCC_AIRLINES = {
 }
 
 
+def party_size(cfg: dict) -> int:
+    t = cfg["travelers"]
+    return t["adults"] + t["children"]
+
+
+def family_total(cfg: dict, adult_fare: int, bags_included: bool) -> tuple[int, int]:
+    """由一張成人票價換算全家總價。回傳 (總價含行李, 行李費小計)。
+
+    傳統航空：兒童票約為成人票的 child_fare_ratio，行李已含。
+    廉價航空：兒童與成人同價，每人另加託運行李費。
+    """
+    t = cfg["travelers"]
+    ratio = 1.0 if not bags_included else cfg["child_fare_ratio"]
+    fares = adult_fare * t["adults"] + round(adult_fare * ratio) * t["children"]
+    bags = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"] * party_size(cfg)
+    return fares + bags, bags
+
+
 def local_time(iso: str, tz: timezone) -> datetime:
     """把 API 的時間轉成當地時間；沒有時區資訊時視為已是當地時間。"""
     t = datetime.fromisoformat(iso.replace("Z", "+00:00"))
@@ -139,7 +157,7 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
                     continue
                 airline = row.get("airline", "")
                 bags_included = airline not in LCC_AIRLINES
-                bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"]
+                total, bag_fee = family_total(cfg, int(row["price"]), bags_included)
                 offer = {
                     "source": "aviasales",
                     "depart": depart,
@@ -147,9 +165,11 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
                     "dep_time": out_t.strftime("%H:%M"),
                     "ret_time": back_t.strftime("%H:%M"),
                     "fare": int(row["price"]),
+                    "fare_basis": "adult",
                     "bag_fee": bag_fee,
                     "bags_included": bags_included,
-                    "price": int(row["price"]) + bag_fee,
+                    "price": total,
+                    "per_person": round(total / party_size(cfg)),
                     "airline": row.get("airline", ""),
                     "flight": f'{row.get("airline", "")}{row.get("flight_number", "")}',
                     "from": row.get("origin_airport", cfg["origin"]),
@@ -199,8 +219,8 @@ def google_candidates(cfg: dict, offers: list[dict], history: dict, today: date)
 def fetch_google(cfg: dict, key: str, pairs: list[tuple[str, str]], today: date) -> tuple[list[dict], list[dict]]:
     """用 SerpApi 查 Google 航班。回傳 (符合條件的最便宜報價, 價格水準資訊)。
 
-    Google 的來回搜尋第一頁只列去程航班，價格已是來回總價（回程由 Google 依 return_times 篩選），
-    所以回程起飛時間記為空字串。
+    以設定的大人＋兒童人數查詢，Google 會套用各航空的兒童票規則，回傳的是全家來回總價。
+    來回搜尋第一頁只列去程航班（回程由 Google 依 return_times 篩選），所以回程起飛時間記為空字串。
     """
     hours = lambda w: f"{int(w[0][:2])},{int(w[1][:2])}"
     offers, insights = [], []
@@ -212,7 +232,8 @@ def fetch_google(cfg: dict, key: str, pairs: list[tuple[str, str]], today: date)
             "outbound_date": dep,
             "return_date": ret,
             "type": 1,
-            "adults": 1,
+            "adults": cfg["travelers"]["adults"],
+            "children": cfg["travelers"]["children"],
             "currency": cfg["currency"],
             "hl": "zh-TW",
             "gl": "tw",
@@ -242,7 +263,8 @@ def fetch_google(cfg: dict, key: str, pairs: list[tuple[str, str]], today: date)
             number = legs[0].get("flight_number", "")
             code = number.split()[0] if number else ""
             bags_included = code not in LCC_AIRLINES
-            bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"]
+            bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"] * party_size(cfg)
+            total = int(it["price"]) + bag_fee
             offer = {
                 "source": "google",
                 "depart": dep,
@@ -250,9 +272,11 @@ def fetch_google(cfg: dict, key: str, pairs: list[tuple[str, str]], today: date)
                 "dep_time": dep_time,
                 "ret_time": "",
                 "fare": int(it["price"]),
+                "fare_basis": "party",
                 "bag_fee": bag_fee,
                 "bags_included": bags_included,
-                "price": int(it["price"]) + bag_fee,
+                "price": total,
+                "per_person": round(total / party_size(cfg)),
                 "airline": code,
                 "flight": number.replace(" ", ""),
                 "airline_name": legs[0].get("airline", ""),
@@ -319,7 +343,7 @@ def all_time_low(history: dict) -> int | None:
 def format_offer(o: dict) -> str:
     return (
         f'{o["depart"]} {o.get("dep_time", "")} → {o["return"]} {o.get("ret_time", "")}（{(date.fromisoformat(o["return"]) - date.fromisoformat(o["depart"])).days} 天）'
-        f' 含行李 NT${o["price"]:,}{"" if o.get("bags_included", True) else "（廉航，含行李估算）"} {o["flight"]} {o["from"]}-{o["to"]}'
+        f' 全家含行李 NT${o["price"]:,}（平均每人 NT${o["per_person"]:,}）{"" if o.get("bags_included", True) else "［廉航，行李為估算］"} {o["flight"]} {o["from"]}-{o["to"]}'
         f' {"直飛" if o["stops"] == 0 else "轉機 %d 次" % o["stops"]}'
         f'{"［Google 航班］" if o.get("source") == "google" else ""}'
     )
@@ -358,8 +382,10 @@ def main() -> int:
         return 1
 
     now = datetime.now(TAIPEI)
+    t = cfg["travelers"]
     print(f"[{now:%Y-%m-%d %H:%M}] 查詢 {cfg['origin']} ⇄ {cfg['destination']}，"
-          f"出發 {cfg['depart_from']} ~ {cfg['depart_to']}，停留 {cfg['min_trip_days']}-{cfg['max_trip_days']} 天")
+          f"出發 {cfg['depart_from']} ~ {cfg['depart_to']}，停留 {cfg['min_trip_days']}-{cfg['max_trip_days']} 天，"
+          f"{t['adults']} 大人 {t['children']} 兒童")
 
     history = load_history()
     today = now.date()
@@ -409,7 +435,7 @@ def main() -> int:
     if prev_low is None or best["price"] < prev_low:
         reasons.append("觀測以來新低價" + (f"（先前最低 NT${prev_low:,}）" if prev_low else ""))
     if best["price"] <= cfg.get("target_price", 0):
-        reasons.append(f'低於你的目標價 NT${cfg["target_price"]:,}')
+        reasons.append(f'全家總價低於你的目標 NT${cfg["target_price"]:,}')
     low_levels = [i for i in g_insights if i.get("level") == "low" and i.get("matched")]
     if low_levels:
         reasons.append("Google 航班判定為「偏低」價格：" + "、".join(f'{i["depart"]}出發' for i in low_levels))
