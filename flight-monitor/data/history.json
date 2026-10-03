@@ -26,6 +26,103 @@
    "checked_at": "2026-10-03T16:57+08:00",
    "offers": [],
    "insights": []
+  },
+  {
+   "checked_at": "2026-10-03T17:18+08:00",
+   "offers": [
+    {
+     "source": "google",
+     "depart": "2027-01-16",
+     "return": "2027-01-21",
+     "dep_time": "13:30",
+     "ret_time": "",
+     "fare": 13219,
+     "bag_fee": 2400,
+     "bags_included": false,
+     "price": 15619,
+     "airline": "IT",
+     "flight": "IT202",
+     "airline_name": "台灣虎航",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjEoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "source": "google",
+     "depart": "2027-01-16",
+     "return": "2027-01-23",
+     "dep_time": "13:30",
+     "ret_time": "",
+     "fare": 15134,
+     "bag_fee": 2400,
+     "bags_included": false,
+     "price": 17534,
+     "airline": "IT",
+     "flight": "IT202",
+     "airline_name": "台灣虎航",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjMoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "source": "google",
+     "depart": "2027-01-17",
+     "return": "2027-01-22",
+     "dep_time": "15:35",
+     "ret_time": "",
+     "fare": 12668,
+     "bag_fee": 2400,
+     "bags_included": false,
+     "price": 15068,
+     "airline": "IT",
+     "flight": "IT202",
+     "airline_name": "台灣虎航",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE3KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjIoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    }
+   ],
+   "insights": [
+    {
+     "depart": "2027-01-17",
+     "return": "2027-01-22",
+     "lowest": 15068,
+     "level": null,
+     "typical": null,
+     "airline": "台灣虎航",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE3KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjIoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "depart": "2027-01-16",
+     "return": "2027-01-21",
+     "lowest": 15619,
+     "level": null,
+     "typical": null,
+     "airline": "台灣虎航",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjEoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "depart": "2027-01-16",
+     "return": "2027-01-23",
+     "lowest": 17534,
+     "level": null,
+     "typical": null,
+     "airline": "台灣虎航",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjMoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUgBcAGYAQE&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    }
+   ]
   }
  ],
  "config": {
@@ -61,6 +158,10 @@
    "keep_days": 7
   }
  },
- "updated_at": "2026-10-03T16:57+08:00",
- "google_checked": {}
+ "updated_at": "2026-10-03T17:18+08:00",
+ "google_checked": {
+  "2027-01-16|2027-01-21": "2026-10-03",
+  "2027-01-17|2027-01-22": "2026-10-03",
+  "2027-01-16|2027-01-23": "2026-10-03"
+ }
 }
