@@ -211,8 +211,8 @@ function analyze(h) {
     const holOffers = s.offers.filter(inHol);
     return { t: new Date(s.checked_at), all, hol: holOffers.length ? Math.min(...holOffers.map(o => o.price)) : null };
   });
-  const latest = snaps.at(-1);
-  const ranked = latest ? [...latest.offers].sort((a, b) => a.price - b.price) : [];
+  const latest = h.snapshots.at(-1);
+  const ranked = latest?.offers ? [...latest.offers].sort((a, b) => a.price - b.price) : [];
   const allTimeLow = series.length ? Math.min(...series.map(p => p.all)) : null;
   const now = latest ? new Date(latest.checked_at) : new Date();
   const weekAgo = series.filter(p => p.t <= new Date(now - 6.5 * DAY)).at(-1);
@@ -261,7 +261,7 @@ function signal(a) {
 /* ---------- 畫面 ---------- */
 function render(h) {
   const app = $('#app');
-  if (!h.config || !h.snapshots?.some(s => s.offers?.length)) {
+  if (!h.config || !h.snapshots?.length) {
     $('#meta').textContent = '尚無資料';
     app.innerHTML = `<div class="card empty">
       <h2>還沒有票價資料</h2>
@@ -277,6 +277,7 @@ function render(h) {
   }
   const a = analyze(h);
   const best = a.ranked[0];
+  if (!best) return renderNone(a, h);
   const sig = signal(a);
   const holCount = a.ranked.filter(a.inHol);
   const holBest = holCount[0];
@@ -376,6 +377,15 @@ function render(h) {
   addEventListener('resize', () => renderTrend(a), { passive: true });
 }
 
+function renderNone(a, h) {
+  $('#meta').textContent = `最後查詢 ${new Date(h.updated_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false })}・共查過 ${h.snapshots.length} 次`;
+  $('#app').innerHTML = `<section class="card">
+    <h2>目前沒有符合條件的報價</h2>
+    <p class="sub">條件：${a.cfg.direct_only ? '直飛、' : ''}去程 ${a.cfg.outbound_time.join('–')}、回程 ${a.cfg.return_time.join('–')} 起飛，出發 ${md(a.cfg.depart_from)}–${md(a.cfg.depart_to)}，停留 ${a.cfg.min_trip_days}–${a.cfg.max_trip_days} 天。</p>
+    <p class="empty">免費的 Aviasales 來源只收錄別人近兩天搜尋過的票價，離出發還早時資料很少。設定好 Google 航班（SerpApi）後，每天會主動查幾組日期，資料會逐日補齊。${a.allTimeLow ? `之前曾查到的最低價為 ${fmt(a.allTimeLow)}。` : ''}</p>
+  </section>`;
+}
+
 function renderHeat(a) {
   const el = $('#heat');
   const cfg = a.cfg;
@@ -416,6 +426,7 @@ function renderTrend(a) {
   const el = $('#trend');
   const W = Math.max(300, el.clientWidth), H = 240, m = { l: 56, r: 12, t: 12, b: 28 };
   const s = a.series;
+  if (!s.length) { el.innerHTML = '<p class="empty">還沒有可以畫的資料</p>'; return; }
   const vals = s.flatMap(p => [p.all, p.hol]).filter(v => v != null).concat(a.cfg.target_price);
   let lo = Math.min(...vals), hi = Math.max(...vals);
   const pad = (hi - lo) * 0.1 || 1000; lo = Math.floor((lo - pad) / 1000) * 1000; hi = Math.ceil((hi + pad) / 1000) * 1000;
