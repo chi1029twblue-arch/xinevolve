@@ -56,7 +56,9 @@ index.html：讀 history.json 畫出
 | `depart_from` / `depart_to` | 出發日期範圍 |
 | `min_trip_days` / `max_trip_days` | 停留天數範圍 |
 | `direct_only` | `true` 只看直飛 |
-| `target_price` | 來回低於這個價錢就通知（台幣） |
+| `travelers` | 全家人數（大人／兒童）。Google 航班以此人數查總價；所有價格都是全家總價 |
+| `child_fare_ratio` | 傳統航空兒童票相對成人票的比例（預設 0.75）；廉航兒童視為全票 |
+| `target_price` | 全家總價（含行李）低於這個數字就通知（台幣） |
 | `outbound_time` / `return_time` | 去程 / 回程的起飛時段（當地時間），預設避開太早、太晚的航班 |
 | `lcc_bag_fee_roundtrip` | 廉價航空每人來回的託運行李估算費用；所有價格都以「含行李」比較 |
 | `google.queries_per_run` | 每次執行問 Google 航班幾組日期（免費額度每月 250 次，排程一天跑兩次） |
