@@ -1,0 +1,18 @@
+{
+  "_說明": "價格優先：在過年前後的寬鬆窗口內找最便宜的來回組合，再挑日期。日期皆為台灣當地日期。",
+  "origin": "TPE",
+  "destination": "TYO",
+  "currency": "TWD",
+  "depart_from": "2027-01-16",
+  "depart_to": "2027-02-28",
+  "min_trip_days": 3,
+  "max_trip_days": 10,
+  "direct_only": false,
+  "target_price": 12000,
+  "holiday": {
+    "name": "2027 春節連假",
+    "start": "2027-02-04",
+    "end": "2027-02-10"
+  },
+  "serpapi_top_n": 3
+}
