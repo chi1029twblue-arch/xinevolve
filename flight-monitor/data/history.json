@@ -1,1 +1,53 @@
-{"snapshots": []}
+{
+ "snapshots": [
+  {
+   "checked_at": "2026-10-03T10:32+08:00",
+   "offers": [
+    {
+     "depart": "2027-01-18",
+     "return": "2027-01-22",
+     "dep_time": "14:45",
+     "ret_time": "16:25",
+     "fare": 9788,
+     "bag_fee": 2400,
+     "bags_included": false,
+     "price": 12188,
+     "airline": "VZ",
+     "flight": "VZ568",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 1,
+     "link": "https://www.aviasales.com/search/TPE1801TYO22011?t=MM18002835001800385800001645TPEOKANRT18006351001800694500001050NRTOKATPE_6ec3ee6696d5e1a8fd31301e56307c92_25555&search_date=01102026&expected_price_uuid=01a0f820-0113-8030-a4a5-651ae9600792&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=1sXfwRQeBn5Rax8Q3zYONw&expected_price_source=share&expected_price_currency=twd&expected_price=9788"
+    }
+   ],
+   "insights": []
+  }
+ ],
+ "config": {
+  "origin": "TPE",
+  "destination": "TYO",
+  "currency": "TWD",
+  "depart_from": "2027-01-16",
+  "depart_to": "2027-02-28",
+  "min_trip_days": 3,
+  "max_trip_days": 10,
+  "direct_only": false,
+  "outbound_time": [
+   "09:00",
+   "16:30"
+  ],
+  "return_time": [
+   "10:00",
+   "18:30"
+  ],
+  "lcc_bag_fee_roundtrip": 2400,
+  "target_price": 12000,
+  "holiday": {
+   "name": "2027 春節連假",
+   "start": "2027-02-04",
+   "end": "2027-02-10"
+  },
+  "serpapi_top_n": 3
+ },
+ "updated_at": "2026-10-03T10:32+08:00"
+}
