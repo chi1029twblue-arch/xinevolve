@@ -37,6 +37,23 @@ TAIPEI = timezone(timedelta(hours=8))
 TRAVELPAYOUTS_URL = "https://api.travelpayouts.com/aviasales/v3/prices_for_dates"
 SERPAPI_URL = "https://serpapi.com/search.json"
 TOKYO_AIRPORTS = "NRT,HND"
+TOKYO = timezone(timedelta(hours=9))
+
+# 廉價航空：票價不含託運行李，需另加行李費
+LCC_AIRLINES = {
+    "IT", "MM", "GK", "JQ", "3K", "VZ", "FD", "AK", "D7", "TR", "UO", "5J", "Z2", "IJ", "ZG",
+    "7C", "TW", "LJ", "BX", "ZE", "RS", "9C", "HB", "DD", "SL", "OD",
+}
+
+
+def local_time(iso: str, tz: timezone) -> datetime:
+    """把 API 的時間轉成當地時間；沒有時區資訊時視為已是當地時間。"""
+    t = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    return t.astimezone(tz) if t.tzinfo else t.replace(tzinfo=tz)
+
+
+def time_ok(t: datetime, window: list[str]) -> bool:
+    return window[0] <= t.strftime("%H:%M") <= window[1]
 
 
 def http_get_json(url: str, params: dict, headers: dict | None = None) -> dict:
@@ -108,13 +125,27 @@ def fetch_travelpayouts(cfg: dict, token: str) -> list[dict]:
             if not body.get("success", False):
                 raise RuntimeError(f"Travelpayouts 回傳錯誤：{body.get('error') or body}")
             for row in body.get("data", []):
-                depart, ret = row["departure_at"][:10], row.get("return_at", "")[:10]
-                if not ret or not in_window(cfg, depart, ret):
+                if not row.get("return_at"):
                     continue
+                out_t = local_time(row["departure_at"], TAIPEI)
+                back_t = local_time(row["return_at"], TOKYO)
+                depart, ret = out_t.date().isoformat(), back_t.date().isoformat()
+                if not in_window(cfg, depart, ret):
+                    continue
+                if not (time_ok(out_t, cfg["outbound_time"]) and time_ok(back_t, cfg["return_time"])):
+                    continue
+                airline = row.get("airline", "")
+                bags_included = airline not in LCC_AIRLINES
+                bag_fee = 0 if bags_included else cfg["lcc_bag_fee_roundtrip"]
                 offer = {
                     "depart": depart,
                     "return": ret,
-                    "price": int(row["price"]),
+                    "dep_time": out_t.strftime("%H:%M"),
+                    "ret_time": back_t.strftime("%H:%M"),
+                    "fare": int(row["price"]),
+                    "bag_fee": bag_fee,
+                    "bags_included": bags_included,
+                    "price": int(row["price"]) + bag_fee,
                     "airline": row.get("airline", ""),
                     "flight": f'{row.get("airline", "")}{row.get("flight_number", "")}',
                     "from": row.get("origin_airport", cfg["origin"]),
@@ -178,8 +209,8 @@ def all_time_low(history: dict) -> int | None:
 
 def format_offer(o: dict) -> str:
     return (
-        f'{o["depart"]} → {o["return"]}（{(date.fromisoformat(o["return"]) - date.fromisoformat(o["depart"])).days} 天）'
-        f' NT${o["price"]:,} {o["flight"]} {o["from"]}-{o["to"]}'
+        f'{o["depart"]} {o.get("dep_time", "")} → {o["return"]} {o.get("ret_time", "")}（{(date.fromisoformat(o["return"]) - date.fromisoformat(o["depart"])).days} 天）'
+        f' 含行李 NT${o["price"]:,}{"" if o.get("bags_included", True) else "（廉航，含行李估算）"} {o["flight"]} {o["from"]}-{o["to"]}'
         f' {"直飛" if o["stops"] == 0 else "轉機 %d 次" % o["stops"]}'
     )
 
