@@ -282,6 +282,7 @@ function render(h) {
   const holBest = holCount[0];
 
   $('#meta').innerHTML = `${esc(a.cfg.origin)} ⇄ ${esc(a.cfg.destination)}（成田＋羽田）・出發 ${md(a.cfg.depart_from)}–${md(a.cfg.depart_to)}・停留 ${a.cfg.min_trip_days}–${a.cfg.max_trip_days} 天・`
+    + (a.cfg.direct_only ? '只看直飛・' : '')
     + (a.cfg.outbound_time ? `去程 ${a.cfg.outbound_time.join('–')} 起飛・回程 ${a.cfg.return_time.join('–')} 起飛・` : '')
     + `${esc(a.hol.name)} ${md(a.hol.start)}–${md(a.hol.end)}・最後更新 ${new Date(h.updated_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false })}`;
 
@@ -318,7 +319,7 @@ function render(h) {
 
   <section class="card">
     <h2>① 最便宜的 10 組日期</h2>
-    <p class="sub">價格優先排序，價格已含一件託運行李：傳統航空本來就含，廉航另加估算的行李費。時間為當地起飛時間。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
+    <p class="sub">價格優先排序，價格已含一件託運行李：傳統航空本來就含，廉航另加估算的行李費。時間為當地起飛時間；<span class="tag">G</span> 是 Google 航班查到的價格（回程時間由 Google 依條件篩選，不另列）。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
     <div class="scroll"><table>
       <thead><tr><th class="wide">#</th><th style="text-align:right">含行李來回</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th class="wide">機場</th><th></th></tr></thead>
       <tbody>${a.ranked.slice(0, 10).map((o, i) => `<tr>
@@ -327,7 +328,7 @@ function render(h) {
         <td>${mdw(o.depart)}${o.dep_time ? `<br><span class="bag">${o.dep_time}</span>` : ''}${a.inHol(o) ? '<br><span class="tag hol">連假</span>' : ''}</td>
         <td>${mdw(o.return)}${o.ret_time ? `<br><span class="bag">${o.ret_time}</span>` : ''}</td>
         <td>${tripDays(o)} 天</td>
-        <td>${esc(o.flight)}<br><span style="font-size:12px;color:var(--text-2)">${o.stops ? `轉機 ${o.stops} 次` : '直飛'}</span></td>
+        <td>${esc(o.flight)}${o.source === 'google' ? ' <span class="tag">G</span>' : ''}<br><span style="font-size:12px;color:var(--text-2)">${o.stops ? `轉機 ${o.stops} 次` : '直飛'}</span></td>
         <td class="wide">${esc(o.from)}–${esc(o.to)}</td>
         <td>${o.link ? `<a href="${esc(o.link)}" target="_blank" rel="noopener">查看</a>` : ''}</td>
       </tr>`).join('')}</tbody>
@@ -357,16 +358,16 @@ function render(h) {
   </section>
 
   ${a.insights.length ? `<section class="card">
-    <h2>④ Google 航班複查（最便宜的 ${a.insights.length} 組日期）</h2>
-    <p class="sub">Google 會依歷史價格判斷「偏低／一般／偏高」，偏低時是好買點。</p>
+    <h2>④ Google 航班價格水準（近 ${a.cfg.google?.keep_days ?? 7} 天查過的 ${a.insights.length} 組日期）</h2>
+    <p class="sub">每天在免費額度內輪流查幾組日期。Google 依該航線歷史價格判斷「偏低／一般／偏高」，偏低時是好買點。標示「無符合」表示那天沒有直飛且時段合適的航班，顯示的是 Google 的整體最低價。</p>
     <div class="insights">${a.insights.map(i => {
       const lv = { low: ['var(--good)', '↓ 偏低'], typical: ['var(--warning)', '— 一般'], high: ['var(--critical)', '↑ 偏高'] }[i.level] || ['var(--muted)', '未知'];
       return `<div class="insight">
         <div><b>${mdw(i.depart)} → ${mdw(i.return)}</b></div>
-        <div style="font-size:22px;font-weight:700">${fmt(i.lowest)}</div>
+        <div style="font-size:22px;font-weight:700">${fmt(i.lowest)}${i.matched === false ? ' <span class="tag">無符合</span>' : ''}</div>
         <div><span class="tag" style="border-color:${lv[0]}"><span style="color:${lv[0]}">●</span> ${lv[1]}</span>
           ${i.typical ? `<span style="color:var(--text-2);font-size:13px">一般 ${fmt(i.typical[0])}–${fmt(i.typical[1])}</span>` : ''}</div>
-        <div style="color:var(--text-2);font-size:13px">${esc(i.airline)} ${i.link ? `・<a href="${esc(i.link)}" target="_blank" rel="noopener">Google 航班</a>` : ''}</div>
+        <div style="color:var(--text-2);font-size:13px">${esc(i.airline)}${i.seen_at ? `・${md(i.seen_at)} 查` : ''} ${i.link ? `・<a href="${esc(i.link)}" target="_blank" rel="noopener">Google 航班</a>` : ''}</div>
       </div>`; }).join('')}</div>
   </section>` : ''}
   `;
