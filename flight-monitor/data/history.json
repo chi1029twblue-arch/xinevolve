@@ -21,6 +21,11 @@
     }
    ],
    "insights": []
+  },
+  {
+   "checked_at": "2026-10-03T16:57+08:00",
+   "offers": [],
+   "insights": []
   }
  ],
  "config": {
@@ -31,7 +36,7 @@
   "depart_to": "2027-02-28",
   "min_trip_days": 3,
   "max_trip_days": 10,
-  "direct_only": false,
+  "direct_only": true,
   "outbound_time": [
    "09:00",
    "16:30"
@@ -47,7 +52,15 @@
    "start": "2027-02-04",
    "end": "2027-02-10"
   },
-  "serpapi_top_n": 3
+  "google": {
+   "queries_per_run": 3,
+   "trip_days": [
+    5,
+    7
+   ],
+   "keep_days": 7
+  }
  },
- "updated_at": "2026-10-03T10:32+08:00"
+ "updated_at": "2026-10-03T16:57+08:00",
+ "google_checked": {}
 }
