@@ -1,0 +1,43 @@
+name: 東京春節機票觀測
+
+on:
+  schedule:
+    # 每天台灣時間 08:17 與 20:17 各查一次（UTC 00:17 / 12:17）
+    - cron: "17 0,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flight-monitor
+  cancel-in-progress: false
+
+jobs:
+  check-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 抓取票價
+        env:
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python flight-monitor/monitor.py
+
+      - name: 保存歷史資料
+        run: |
+          git config user.name "flight-monitor-bot"
+          git config user.email "flight-monitor-bot@users.noreply.github.com"
+          git add flight-monitor/data/history.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(flight-monitor): 票價快照 $(TZ=Asia/Taipei date '+%Y-%m-%d %H:%M')"
+          git pull --rebase
+          git push

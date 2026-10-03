@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東京機票觀測</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --surface: #fcfcfb;
+  --border: #e4e2dc;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #7a7973;
+  --grid: #ebe9e4;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --empty: #f0efec;
+  --holiday: #fff3d6;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec;
+  --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2f2f2c;
+    --text: #ffffff; --text-2: #c3c2b7; --muted: #8f8e86; --grid: #2a2a28;
+    --series-1: #3987e5; --series-2: #d95926;
+    --empty: #262624; --holiday: #3a3220;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --border: #2f2f2c;
+  --text: #ffffff; --text-2: #c3c2b7; --muted: #8f8e86; --grid: #2a2a28;
+  --series-1: #3987e5; --series-2: #d95926;
+  --empty: #262624; --holiday: #3a3220;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.6; font-size: 15px;
+  padding: 24px 16px 64px;
+}
+main, #app { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+main > *, #app > * { min-width: 0; }
+header h1 { font-size: 24px; font-weight: 700; }
+header p { color: var(--text-2); font-size: 14px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; min-width: 0;
+}
+.card h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.card .sub { color: var(--text-2); font-size: 13px; margin-bottom: 14px; }
+.banner {
+  border-radius: 10px; padding: 10px 14px; font-size: 14px;
+  background: var(--holiday); border: 1px solid var(--warning);
+}
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.kpi .label { color: var(--text-2); font-size: 13px; }
+.kpi .value { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.kpi .detail { color: var(--text-2); font-size: 13px; }
+.signal { display: flex; gap: 12px; align-items: flex-start; }
+.signal .icon {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; color: #fff; font-size: 17px;
+}
+.signal .title { font-weight: 700; font-size: 17px; }
+.signal ul { margin: 6px 0 0 18px; color: var(--text-2); font-size: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { color: var(--text-2); font-weight: 500; font-size: 13px; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.scroll { overflow-x: auto; }
+.tag {
+  display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 999px;
+  border: 1px solid var(--border); color: var(--text-2);
+}
+.tag.hol { background: var(--holiday); border-color: var(--warning); color: var(--text); }
+a { color: var(--series-1); }
+/* heatmap */
+.heat { display: grid; gap: 2px; font-variant-numeric: tabular-nums; }
+.heat .h { font-size: 12px; color: var(--text-2); text-align: center; padding-bottom: 2px; }
+.heat .rowlab { font-size: 12px; color: var(--text-2); white-space: nowrap; padding-right: 6px; display: flex; align-items: center; gap: 4px; }
+.heat .rowlab.hol { color: var(--text); font-weight: 700; }
+.heat .cell {
+  height: 26px; border-radius: 4px; font-size: 11px;
+  display: grid; place-items: center; cursor: default; color: var(--text);
+  text-decoration: none;
+}
+.heat .cell[href] { cursor: pointer; }
+.heat .cell[style*="--seq"] { color: #0b0b0b; }
+.heat .cell.dark { color: #fff; }
+.heat .cell.best { outline: 2px solid var(--text); outline-offset: -2px; font-weight: 700; }
+.heat .cell:hover { outline: 2px solid var(--text-2); outline-offset: -2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; font-size: 13px; color: var(--text-2); margin-top: 12px; }
+.legend .ramp { display: flex; gap: 2px; align-items: center; }
+.legend .ramp span { width: 22px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend .sw { width: 14px; height: 3px; border-radius: 2px; display: inline-block; vertical-align: middle; margin-right: 4px; }
+#tip {
+  position: fixed; pointer-events: none; z-index: 10; display: none;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15); max-width: 260px;
+}
+#tip b { font-variant-numeric: tabular-nums; }
+svg text { fill: var(--text-2); font-size: 11px; font-family: inherit; }
+.insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.insight { border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 14px; }
+.empty { color: var(--text-2); font-size: 14px; }
+.empty code, .card code { background: var(--empty); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+footer { color: var(--muted); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>✈️ 台北 ⇄ 東京｜春節前後機票觀測</h1>
+    <p id="meta">載入中…</p>
+  </header>
+  <div id="demo-banner" class="banner" hidden>⚠️ 目前顯示的是<b>示範資料（隨機產生，非真實票價）</b>，僅供預覽版面。設定好 API token 並讓排程跑過後，移除網址的 <code>?demo=1</code> 即可看到真實資料。</div>
+  <div id="app"></div>
+  <footer>價格來源：Travelpayouts / Aviasales 使用者近 48 小時搜尋快取（＋選用 Google 航班複查）。實際票價以訂位頁面為準。建議訊號為簡單經驗法則，不構成保證。</footer>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const fmt = n => n == null ? '—' : 'NT$' + Math.round(n).toLocaleString('en-US');
+const DAY = 86400000;
+const parseD = s => new Date(s + 'T00:00:00+08:00');
+const isoD = d => new Date(d.getTime() + 8 * 3600000).toISOString().slice(0, 10);
+const tripDays = o => Math.round((parseD(o.return) - parseD(o.depart)) / DAY);
+const WD = ['日', '一', '二', '三', '四', '五', '六'];
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8, 10)}`;
+const mdw = s => `${md(s)}(${WD[new Date(s.slice(0, 10) + 'T00:00:00Z').getUTCDay()]})`;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const tip = $('#tip');
+function showTip(e, html) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+}
+const hideTip = () => tip.style.display = 'none';
+
+/* ---------- 示範資料（?demo=1） ---------- */
+function makeDemo() {
+  const cfg = {
+    origin: 'TPE', destination: 'TYO', currency: 'TWD',
+    depart_from: '2027-01-16', depart_to: '2027-02-28', min_trip_days: 3, max_trip_days: 10,
+    target_price: 12000, holiday: { name: '2027 春節連假', start: '2027-02-04', end: '2027-02-10' }
+  };
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const airlines = ['IT', 'MM', 'JX', 'CI', 'BR', 'JL', 'NH'];
+  const snaps = [];
+  const start = Date.now() - 40 * DAY;
+  for (let s = 0; s < 40; s++) {
+    const drift = 1 + 0.12 * Math.sin(s / 6) + s * 0.004;
+    const offers = [];
+    for (let d = parseD(cfg.depart_from); d <= parseD(cfg.depart_to); d = new Date(d.getTime() + DAY)) {
+      for (let t = cfg.min_trip_days; t <= cfg.max_trip_days; t++) {
+        if (rnd() < 0.25) continue;
+        const dep = isoD(d), ret = isoD(new Date(d.getTime() + t * DAY));
+        const distOut = (parseD('2027-02-03') - d) / DAY;           // 出發越靠近小年夜前越貴
+        const peakOut = Math.max(0, 1 - Math.abs(distOut) / 5) * 9000;
+        const distBack = (parseD(ret) - parseD('2027-02-10')) / DAY;  // 收假前回台越貴
+        const peakBack = Math.max(0, 1 - Math.abs(distBack) / 3) * 7000;
+        const price = (10500 + peakOut + peakBack + t * 250 + rnd() * 3500) * drift;
+        const al = airlines[Math.floor(rnd() * airlines.length)];
+        offers.push({ depart: dep, return: ret, price: Math.round(price / 10) * 10, airline: al,
+          flight: al + (100 + Math.floor(rnd() * 800)), from: 'TPE', to: rnd() < .6 ? 'NRT' : 'HND',
+          stops: rnd() < .85 ? 0 : 1, link: '' });
+      }
+    }
+    snaps.push({ checked_at: new Date(start + s * DAY).toISOString(), offers, insights: [] });
+  }
+  const best = [...snaps.at(-1).offers].sort((a, b) => a.price - b.price).slice(0, 3);
+  snaps.at(-1).insights = best.map((o, i) => ({ depart: o.depart, return: o.return, lowest: o.price + 300,
+    level: ['low', 'typical', 'typical'][i], typical: [12500, 19000], airline: '示範航空', link: '' }));
+  return { config: cfg, snapshots: snaps, updated_at: snaps.at(-1).checked_at };
+}
+
+/* ---------- 計算 ---------- */
+function analyze(h) {
+  const cfg = h.config;
+  const hol = cfg.holiday;
+  const inHol = o => o.depart >= hol.start && o.depart <= hol.end;
+  const snaps = h.snapshots.filter(s => s.offers && s.offers.length);
+  const series = snaps.map(s => {
+    const all = Math.min(...s.offers.map(o => o.price));
+    const holOffers = s.offers.filter(inHol);
+    return { t: new Date(s.checked_at), all, hol: holOffers.length ? Math.min(...holOffers.map(o => o.price)) : null };
+  });
+  const latest = snaps.at(-1);
+  const ranked = latest ? [...latest.offers].sort((a, b) => a.price - b.price) : [];
+  const allTimeLow = series.length ? Math.min(...series.map(p => p.all)) : null;
+  const now = latest ? new Date(latest.checked_at) : new Date();
+  const weekAgo = series.filter(p => p.t <= new Date(now - 6.5 * DAY)).at(-1);
+  return { cfg, hol, inHol, series, latest, ranked, allTimeLow, weekAgo, insights: latest?.insights || [] };
+}
+
+function signal(a) {
+  const best = a.ranked[0];
+  const daysLeft = Math.round((parseD(best.depart) - new Date()) / DAY);
+  const reasons = [];
+  let level = 'watch';
+  if (a.series.length < 3) {
+    reasons.push(`才觀測 ${a.series.length} 次，再累積幾天資料判斷會更準`);
+  }
+  if (best.price <= a.cfg.target_price) {
+    level = 'buy'; reasons.push(`最低價 ${fmt(best.price)} 已低於你的目標價 ${fmt(a.cfg.target_price)}`);
+  }
+  if (a.series.length >= 3 && best.price <= a.allTimeLow * 1.03) {
+    level = level === 'buy' ? 'buy' : 'consider';
+    reasons.push(`接近觀測以來最低（${fmt(a.allTimeLow)}）`);
+  }
+  if (a.weekAgo && best.price > a.weekAgo.all * 1.05) {
+    if (level === 'watch') level = 'rising';
+    reasons.push(`比 7 天前貴了 ${Math.round((best.price / a.weekAgo.all - 1) * 100)}%，價格在上漲`);
+  } else if (a.weekAgo && best.price < a.weekAgo.all * 0.95) {
+    reasons.push(`比 7 天前便宜 ${Math.round((1 - best.price / a.weekAgo.all) * 100)}%，還在下降中`);
+  }
+  if (a.insights.some(i => i.level === 'low')) {
+    level = level === 'watch' || level === 'rising' ? 'consider' : level;
+    reasons.push('Google 航班判定部分日期為「偏低」價格');
+  }
+  if (daysLeft <= 45) {
+    if (level === 'watch') level = 'rising';
+    reasons.push(`離出發只剩 ${daysLeft} 天，旺季越接近通常越貴`);
+  }
+  const map = {
+    buy: { color: 'var(--good)', icon: '✓', title: '好價！建議下手' },
+    consider: { color: 'var(--good)', icon: '↓', title: '價格不錯，可以考慮' },
+    rising: { color: 'var(--serious)', icon: '!', title: '價格偏升，別等太久' },
+    watch: { color: 'var(--series-1)', icon: '…', title: '持續觀察中' },
+  };
+  if (!reasons.length) reasons.push('價格平穩，尚未出現明顯低點');
+  return { ...map[level], reasons, daysLeft };
+}
+
+/* ---------- 畫面 ---------- */
+function render(h) {
+  const app = $('#app');
+  if (!h.config || !h.snapshots?.some(s => s.offers?.length)) {
+    $('#meta').textContent = '尚無資料';
+    app.innerHTML = `<div class="card empty">
+      <h2>還沒有票價資料</h2>
+      <p class="sub">排程第一次執行後就會出現圖表。</p>
+      <ol style="margin-left:20px">
+        <li>到 Travelpayouts 註冊並取得 API token</li>
+        <li>在 GitHub repo → Settings → Secrets → Actions 新增 <code>TRAVELPAYOUTS_TOKEN</code></li>
+        <li>到 Actions 分頁手動執行「東京春節機票觀測」</li>
+      </ol>
+      <p style="margin-top:10px">想先看版面？在網址後加上 <a href="?demo=1"><code>?demo=1</code></a>。</p>
+    </div>`;
+    return;
+  }
+  const a = analyze(h);
+  const best = a.ranked[0];
+  const sig = signal(a);
+  const holCount = a.ranked.filter(a.inHol);
+  const holBest = holCount[0];
+
+  $('#meta').innerHTML = `${esc(a.cfg.origin)} ⇄ ${esc(a.cfg.destination)}（成田＋羽田）・出發 ${md(a.cfg.depart_from)}–${md(a.cfg.depart_to)}・停留 ${a.cfg.min_trip_days}–${a.cfg.max_trip_days} 天・`
+    + `${esc(a.hol.name)} ${md(a.hol.start)}–${md(a.hol.end)}・最後更新 ${new Date(h.updated_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false })}`;
+
+  app.innerHTML = `
+  <section class="card">
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">目前最便宜來回</div>
+        <div class="value">${fmt(best.price)}</div>
+        <div class="detail">${mdw(best.depart)} → ${mdw(best.return)}・${tripDays(best)} 天・${esc(best.flight)}</div>
+      </div>
+      <div class="kpi">
+        <div class="label">觀測以來最低</div>
+        <div class="value">${fmt(a.allTimeLow)}</div>
+        <div class="detail">共觀測 ${a.series.length} 次</div>
+      </div>
+      <div class="kpi">
+        <div class="label">連假期間出發最便宜</div>
+        <div class="value">${fmt(holBest?.price)}</div>
+        <div class="detail">${holBest ? `${mdw(holBest.depart)} → ${mdw(holBest.return)}・比最便宜貴 ${fmt(holBest.price - best.price)}` : '連假期間暫無報價'}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="signal">
+      <div class="icon" style="background:${sig.color}" aria-hidden="true">${sig.icon}</div>
+      <div>
+        <div class="title">${sig.title}</div>
+        <ul>${sig.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>① 最便宜的 10 組日期</h2>
+    <p class="sub">價格優先排序 — 先看哪個價錢能接受，再確認日期能不能配合。<span class="tag hol">連假</span> 表示在春節連假期間出發。</p>
+    <div class="scroll"><table>
+      <thead><tr><th>#</th><th style="text-align:right">來回含稅</th><th>去程</th><th>回程</th><th>天數</th><th>航班</th><th>機場</th><th></th></tr></thead>
+      <tbody>${a.ranked.slice(0, 10).map((o, i) => `<tr>
+        <td>${i + 1}</td>
+        <td class="num">${fmt(o.price)}</td>
+        <td>${mdw(o.depart)} ${a.inHol(o) ? '<span class="tag hol">連假</span>' : ''}</td>
+        <td>${mdw(o.return)}</td>
+        <td>${tripDays(o)} 天</td>
+        <td>${esc(o.flight)} ${o.stops ? `<span class="tag">轉 ${o.stops}</span>` : '<span class="tag">直飛</span>'}</td>
+        <td>${esc(o.from)}–${esc(o.to)}</td>
+        <td>${o.link ? `<a href="${esc(o.link)}" target="_blank" rel="noopener">查看</a>` : ''}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </section>
+
+  <section class="card">
+    <h2>② 日期 × 天數 價格地圖</h2>
+    <p class="sub">每列是出發日、每欄是停留天數；<b>顏色越深越便宜</b>，數字單位為「千元」，粗框為目前最低。滑過看細節。</p>
+    <div class="scroll"><div class="heat" id="heat"></div></div>
+    <div class="legend">
+      <span>貴</span><span class="ramp">${[1, 2, 3, 4, 5, 6].map(i => `<span style="background:var(--seq-${i})"></span>`).join('')}</span><span>便宜</span>
+      <span><span class="ramp"><span style="background:var(--empty)"></span></span> 無報價</span>
+      <span>🧧 春節連假出發日</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>③ 最低價走勢</h2>
+    <p class="sub">每次觀測時，整個窗口內的最低來回價 vs. 只看連假期間出發的最低價。用來判斷現在是不是相對低點。</p>
+    <div id="trend"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--series-1)"></span>全窗口最低</span>
+      <span><span class="sw" style="background:var(--series-2)"></span>連假期間出發最低</span>
+      <span><span class="sw" style="background:var(--text-2);height:1px"></span>目標價 ${fmt(a.cfg.target_price)}</span>
+    </div>
+  </section>
+
+  ${a.insights.length ? `<section class="card">
+    <h2>④ Google 航班複查（最便宜的 ${a.insights.length} 組日期）</h2>
+    <p class="sub">Google 會依歷史價格判斷「偏低／一般／偏高」，偏低時是好買點。</p>
+    <div class="insights">${a.insights.map(i => {
+      const lv = { low: ['var(--good)', '↓ 偏低'], typical: ['var(--warning)', '— 一般'], high: ['var(--critical)', '↑ 偏高'] }[i.level] || ['var(--muted)', '未知'];
+      return `<div class="insight">
+        <div><b>${mdw(i.depart)} → ${mdw(i.return)}</b></div>
+        <div style="font-size:22px;font-weight:700">${fmt(i.lowest)}</div>
+        <div><span class="tag" style="border-color:${lv[0]}"><span style="color:${lv[0]}">●</span> ${lv[1]}</span>
+          ${i.typical ? `<span style="color:var(--text-2);font-size:13px">一般 ${fmt(i.typical[0])}–${fmt(i.typical[1])}</span>` : ''}</div>
+        <div style="color:var(--text-2);font-size:13px">${esc(i.airline)} ${i.link ? `・<a href="${esc(i.link)}" target="_blank" rel="noopener">Google 航班</a>` : ''}</div>
+      </div>`; }).join('')}</div>
+  </section>` : ''}
+  `;
+  renderHeat(a);
+  renderTrend(a);
+  addEventListener('resize', () => renderTrend(a), { passive: true });
+}
+
+function renderHeat(a) {
+  const el = $('#heat');
+  const cfg = a.cfg;
+  const offers = a.latest.offers;
+  const byKey = new Map(offers.map(o => [o.depart + '|' + tripDays(o), o]));
+  const prices = offers.map(o => o.price);
+  const lo = Math.min(...prices), hi = Math.max(...prices);
+  const bucket = p => hi === lo ? 6 : 6 - Math.min(5, Math.floor((p - lo) / (hi - lo) * 6)); // 便宜 → 6（最深）
+  const trips = []; for (let t = cfg.min_trip_days; t <= cfg.max_trip_days; t++) trips.push(t);
+  el.style.gridTemplateColumns = `auto repeat(${trips.length}, minmax(34px, 1fr))`;
+  let html = '<div></div>' + trips.map(t => `<div class="h">${t}天</div>`).join('');
+  const best = a.ranked[0];
+  for (let d = parseD(cfg.depart_from); d <= parseD(cfg.depart_to); d = new Date(d.getTime() + DAY)) {
+    const dep = isoD(d);
+    const hol = dep >= a.hol.start && dep <= a.hol.end;
+    html += `<div class="rowlab ${hol ? 'hol' : ''}">${mdw(dep)}${hol ? ' 🧧' : ''}</div>`;
+    for (const t of trips) {
+      const o = byKey.get(dep + '|' + t);
+      if (!o) { html += `<div class="cell" style="background:var(--empty)" data-k=""></div>`; continue; }
+      const b = bucket(o.price);
+      const tag = o.link ? 'a' : 'div';
+      html += `<${tag} class="cell ${b >= 4 ? 'dark' : ''} ${o === best ? 'best' : ''}" style="background:var(--seq-${b})"
+        data-k="${dep}|${t}" ${o.link ? `href="${esc(o.link)}" target="_blank" rel="noopener"` : ''}>${(o.price / 1000).toFixed(1)}</${tag}>`;
+    }
+  }
+  el.innerHTML = html;
+  el.onmousemove = e => {
+    const c = e.target.closest('.cell'); if (!c) return hideTip();
+    const o = byKey.get(c.dataset.k);
+    if (!o) return showTip(e, '這組日期目前沒有報價');
+    const rank = a.ranked.indexOf(o) + 1;
+    showTip(e, `<b>${fmt(o.price)}</b>（第 ${rank} 便宜）<br>${mdw(o.depart)} → ${mdw(o.return)}・${tripDays(o)} 天<br>${esc(o.flight)} ${esc(o.from)}–${esc(o.to)} ${o.stops ? '轉機' : '直飛'}`);
+  };
+  el.onmouseleave = hideTip;
+}
+
+function renderTrend(a) {
+  const el = $('#trend');
+  const W = Math.max(300, el.clientWidth), H = 240, m = { l: 56, r: 12, t: 12, b: 28 };
+  const s = a.series;
+  const vals = s.flatMap(p => [p.all, p.hol]).filter(v => v != null).concat(a.cfg.target_price);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = (hi - lo) * 0.1 || 1000; lo = Math.floor((lo - pad) / 1000) * 1000; hi = Math.ceil((hi + pad) / 1000) * 1000;
+  const t0 = s[0].t.getTime(), t1 = Math.max(s.at(-1).t.getTime(), t0 + DAY);
+  const x = t => m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r);
+  const y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+  const step = Math.max(1000, Math.ceil((hi - lo) / 5 / 1000) * 1000);
+  let g = '';
+  for (let v = lo; v <= hi; v += step) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${(v / 1000).toFixed(0)}k</text>`;
+  const ticks = Math.min(6, s.length);
+  for (let i = 0; i < ticks; i++) {
+    const p = s[Math.round(i * (s.length - 1) / Math.max(1, ticks - 1))];
+    g += `<text x="${x(p.t)}" y="${H - 8}" text-anchor="middle">${p.t.getMonth() + 1}/${p.t.getDate()}</text>`;
+  }
+  const path = key => {
+    let d = '', pen = false;
+    for (const p of s) { if (p[key] == null) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p[key]).toFixed(1)}`; pen = true; }
+    return d;
+  };
+  const last = s.at(-1);
+  el.innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="最低價走勢圖">
+    ${g}
+    <line x1="${m.l}" x2="${W - m.r}" y1="${y(a.cfg.target_price)}" y2="${y(a.cfg.target_price)}" stroke="var(--text-2)" stroke-dasharray="4 4"/>
+    <path d="${path('hol')}" fill="none" stroke="var(--series-2)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="${path('all')}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>
+    ${last.hol != null ? `<circle cx="${x(last.t)}" cy="${y(last.hol)}" r="4" fill="var(--series-2)" stroke="var(--surface)" stroke-width="2"/>` : ''}
+    <circle cx="${x(last.t)}" cy="${y(last.all)}" r="4" fill="var(--series-1)" stroke="var(--surface)" stroke-width="2"/>
+    <line id="xh" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-2)" stroke-width="1" visibility="hidden"/>
+    <rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" id="hit"/>
+  </svg>`;
+  const svg = el.querySelector('svg'), xh = el.querySelector('#xh');
+  el.querySelector('#hit').onmousemove = e => {
+    const r = svg.getBoundingClientRect(); const mx = e.clientX - r.left;
+    let p = s[0]; for (const q of s) if (Math.abs(x(q.t) - mx) < Math.abs(x(p.t) - mx)) p = q;
+    xh.setAttribute('x1', x(p.t)); xh.setAttribute('x2', x(p.t)); xh.setAttribute('visibility', 'visible');
+    showTip(e, `${p.t.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}<br>
+      <span style="color:var(--series-1)">━</span> 全窗口最低 <b>${fmt(p.all)}</b><br>
+      <span style="color:var(--series-2)">━</span> 連假出發最低 <b>${fmt(p.hol)}</b>`);
+  };
+  el.querySelector('#hit').onmouseleave = () => { hideTip(); xh.setAttribute('visibility', 'hidden'); };
+}
+
+(async () => {
+  const demo = new URLSearchParams(location.search).has('demo');
+  if (demo) { $('#demo-banner').hidden = false; return render(makeDemo()); }
+  try {
+    const r = await fetch('data/history.json?t=' + Date.now());
+    if (!r.ok) throw new Error(r.status);
+    render(await r.json());
+  } catch (e) {
+    render({});
+    $('#meta').textContent = '無法讀取 data/history.json（若是直接用檔案開啟，請改用網址或本機伺服器）';
+  }
+})();
+</script>
+</body>
+</html>
