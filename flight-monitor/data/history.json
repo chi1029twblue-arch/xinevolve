@@ -1,1 +1,151 @@
-{"snapshots": []}
+{
+ "snapshots": [
+  {
+   "checked_at": "2026-10-03T17:28+08:00",
+   "offers": [
+    {
+     "source": "google",
+     "depart": "2027-01-16",
+     "return": "2027-01-21",
+     "dep_time": "13:30",
+     "ret_time": "",
+     "fare": 86742,
+     "fare_basis": "party",
+     "bag_fee": 14400,
+     "bags_included": false,
+     "price": 101142,
+     "per_person": 16857,
+     "airline": "IT",
+     "flight": "IT202",
+     "airline_name": "台灣虎航",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjEoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "source": "google",
+     "depart": "2027-01-16",
+     "return": "2027-01-23",
+     "dep_time": "12:50",
+     "ret_time": "",
+     "fare": 98474,
+     "fare_basis": "party",
+     "bag_fee": 14400,
+     "bags_included": false,
+     "price": 112874,
+     "per_person": 18812,
+     "airline": "GK",
+     "flight": "GK14",
+     "airline_name": "捷星日本航空",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjMoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "source": "google",
+     "depart": "2027-01-17",
+     "return": "2027-01-22",
+     "dep_time": "15:35",
+     "ret_time": "",
+     "fare": 83742,
+     "fare_basis": "party",
+     "bag_fee": 14400,
+     "bags_included": false,
+     "price": 98142,
+     "per_person": 16357,
+     "airline": "IT",
+     "flight": "IT202",
+     "airline_name": "台灣虎航",
+     "from": "TPE",
+     "to": "NRT",
+     "stops": 0,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE3KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjIoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    }
+   ],
+   "insights": [
+    {
+     "depart": "2027-01-17",
+     "return": "2027-01-22",
+     "lowest": 98142,
+     "level": null,
+     "typical": null,
+     "airline": "台灣虎航",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE3KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjIoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "depart": "2027-01-16",
+     "return": "2027-01-21",
+     "lowest": 101142,
+     "level": null,
+     "typical": null,
+     "airline": "台灣虎航",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjEoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    },
+    {
+     "depart": "2027-01-16",
+     "return": "2027-01-23",
+     "lowest": 112874,
+     "level": null,
+     "typical": null,
+     "airline": "捷星日本航空",
+     "matched": true,
+     "link": "https://www.google.com/travel/flights?hl=zh-TW&gl=tw&curr=TWD&tfs=CBwQAhotEgoyMDI3LTAxLTE2KABACUgQagcIARIDVFBFcgcIARIDTlJUcgcIARIDSE5EGi0SCjIwMjctMDEtMjMoAEAKSBJqBwgBEgNOUlRqBwgBEgNITkRyBwgBEgNUUEVAAUABQAFAAUACQAJIAXABmAEB&tfu=EgIIAg",
+     "seen_at": "2026-10-03"
+    }
+   ]
+  }
+ ],
+ "google_checked": {
+  "2027-01-16|2027-01-21": "2026-10-03",
+  "2027-01-16|2027-01-23": "2026-10-03",
+  "2027-01-17|2027-01-22": "2026-10-03"
+ },
+ "config": {
+  "origin": "TPE",
+  "destination": "TYO",
+  "currency": "TWD",
+  "depart_from": "2027-01-16",
+  "depart_to": "2027-02-28",
+  "min_trip_days": 3,
+  "max_trip_days": 10,
+  "direct_only": true,
+  "outbound_time": [
+   "09:00",
+   "16:30"
+  ],
+  "return_time": [
+   "10:00",
+   "18:30"
+  ],
+  "lcc_bag_fee_roundtrip": 2400,
+  "travelers": {
+   "adults": 4,
+   "children": 2
+  },
+  "child_fare_ratio": 0.75,
+  "target_price": 90000,
+  "holiday": {
+   "name": "2027 春節連假",
+   "start": "2027-02-04",
+   "end": "2027-02-10"
+  },
+  "google": {
+   "queries_per_run": 3,
+   "trip_days": [
+    5,
+    7
+   ],
+   "keep_days": 7
+  }
+ },
+ "updated_at": "2026-10-03T17:28+08:00"
+}
